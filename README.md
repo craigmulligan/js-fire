@@ -2,8 +2,8 @@
 
 > A javascript clone of [google/python-fire](https://github.com/google/python-fire)
 
-\_js Fire is a library for automaticallyenerating command line interfaces
-(CLIs) from absolutely any js object.
+js-fire is a library for automatically generating command line interfaces
+(CLIs) from any js object.
 
 * js Fire is a simple way to create a CLI in js.
 * js Fire helps with exploring existing code or turning other people's code
@@ -43,7 +43,5 @@ Then, from the command line, you can run:
 ```bash
 js calculator.py double --number=15  # 30
 ```
-
-See [examples](examples) for object type examples.
 
 For additional examples, see [/examples](/examples).
