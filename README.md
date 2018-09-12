@@ -31,8 +31,8 @@ Here's an example of calling Fire on a class.
 const fire = require('js-fire')
 
 class Calculator {
-  double(n) {
-    return 2 * n
+  double(number) {
+    return 2 * number
   }
 }
 fire(Calculator)
@@ -41,7 +41,7 @@ fire(Calculator)
 Then, from the command line, you can run:
 
 ```bash
-js calculator.py double --number=15  # 30
+node calculator.py double --number=15  # 30
 ```
 
 For additional examples, see [/examples](/examples).
