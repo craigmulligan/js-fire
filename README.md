@@ -41,7 +41,7 @@ fire(Calculator)
 Then, from the command line, you can run:
 
 ```bash
-node calculator.py double --number=15  # 30
+node calculator.js double --number=15  # 30
 ```
 
 For additional examples, see [/examples](/examples).
