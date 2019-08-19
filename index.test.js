@@ -9,7 +9,7 @@ describe('js-fire', () => {
         cwd: __dirname,
       },
       (error, stdout, stderr) => {
-        expect(stdout).toEqual('4')
+        expect(stdout.trim()).toEqual('4')
         done()
       },
     )
@@ -22,7 +22,7 @@ describe('js-fire', () => {
         cwd: __dirname,
       },
       (error, stdout, stderr) => {
-        expect(stdout).toEqual('NaN')
+        expect(stdout.trim()).toEqual('NaN')
         done()
       },
     )
@@ -35,7 +35,7 @@ describe('js-fire', () => {
         cwd: __dirname,
       },
       (error, stdout, stderr) => {
-        expect(stdout).toEqual('40')
+        expect(stdout.trim()).toEqual('40')
         done()
       },
     )
@@ -48,7 +48,7 @@ describe('js-fire', () => {
         cwd: __dirname,
       },
       (error, stdout, stderr) => {
-        expect(stdout).toEqual('10')
+        expect(stdout.trim()).toEqual('10')
         done()
       },
     )
@@ -61,7 +61,18 @@ describe('js-fire', () => {
         cwd: __dirname,
       },
       (error, stdout, stderr) => {
-        expect(stdout).toEqual('10')
+        expect(stdout.trim()).toEqual('10')
+        done()
+      },
+    )
+
+    res = exec(
+      'node examples/class.js triple',
+      {
+        cwd: __dirname,
+      },
+      (error, stdout, stderr) => {
+        expect(stdout.trim()).toEqual('40')
         done()
       },
     )
@@ -74,7 +85,7 @@ describe('js-fire', () => {
         cwd: __dirname,
       },
       (error, stdout, stderr) => {
-        expect(stdout).toEqual('40')
+        expect(stdout.trim()).toEqual('40')
         done()
       },
     )

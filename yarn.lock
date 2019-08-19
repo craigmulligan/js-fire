@@ -1248,12 +1248,6 @@ ini@~1.3.0:
   version "1.3.5"
   resolved "https://registry.yarnpkg.com/ini/-/ini-1.3.5.tgz#eee25f56db1c9ec6085e0c22778083f596abf927"
 
-introspect-fun@^1.0.4:
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/introspect-fun/-/introspect-fun-1.0.4.tgz#e63e8e9fcb9b0c8d033a338b1ae709dcbbe4237f"
-  dependencies:
-    debug "^2.2.0"
-
 invariant@^2.2.0, invariant@^2.2.2, invariant@^2.2.4:
   version "2.2.4"
   resolved "https://registry.yarnpkg.com/invariant/-/invariant-2.2.4.tgz#610f3c92c9359ce1db616e538008d23ff35158e6"
@@ -2095,13 +2089,13 @@ minimatch@^3.0.3, minimatch@^3.0.4:
   dependencies:
     brace-expansion "^1.1.7"
 
-minimist@*, minimist@^1.1.1, minimist@^1.2.0:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/minimist/-/minimist-1.2.0.tgz#a35008b20f41383eec1fb914f4cd5df79a264284"
-
 minimist@0.0.8:
   version "0.0.8"
   resolved "https://registry.yarnpkg.com/minimist/-/minimist-0.0.8.tgz#857fcabfc3397d2625b8228262e86aa7a011b05d"
+
+minimist@^1.1.1, minimist@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/minimist/-/minimist-1.2.0.tgz#a35008b20f41383eec1fb914f4cd5df79a264284"
 
 minimist@~0.0.1:
   version "0.0.10"
@@ -2637,12 +2631,6 @@ resolve@1.1.7:
 ret@~0.1.10:
   version "0.1.15"
   resolved "https://registry.yarnpkg.com/ret/-/ret-0.1.15.tgz#b8a4825d5bdb1fc3f6f53c2bc33f81388681c7bc"
-
-retrieve-arguments@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/retrieve-arguments/-/retrieve-arguments-1.0.1.tgz#895949834428f8e2ccd74c3b3fddb485ff26e3b4"
-  dependencies:
-    minimist "*"
 
 right-align@^0.1.1:
   version "0.1.3"

@@ -1,6 +1,5 @@
 const minimist = require('minimist')
 const argv = require('minimist')(process.argv.slice(2))
-var getArgs = require('introspect-fun')
 const inspect = require('util').inspect
 
 function introspect(fn) {
@@ -20,11 +19,16 @@ function introspect(fn) {
   }
 }
 
-const parseFn = argv => fn => {
+const print = data => {
+  console.log(String(data).trim())
+}
+
+const parseFn = argv => async fn => {
   const names = introspect(fn)
   const values = names.map(name => argv[name]).filter(Boolean)
 
-  return fn(...values)
+  const result = await fn(...values)
+  print(result)
 }
 
 const isClass = fn => /class/.test(fn.toString())
