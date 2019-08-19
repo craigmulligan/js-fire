@@ -24,14 +24,30 @@ const print = data => {
 }
 
 const parseFn = argv => async fn => {
-  const names = introspect(fn)
-  const values = names.map(name => argv[name]).filter(Boolean)
+  const args = introspect(fn)
+  const values = args.map((name, i) => {
+    // if it's a named param then we
+    if (argv[name]) {
+      return argv[name]
+    }
+
+    return argv['_'][i]
+  })
 
   const result = await fn(...values)
   print(result)
 }
 
 const isClass = fn => /class/.test(fn.toString())
+
+function getAllMethodNames(obj) {
+  let methods = new Set()
+  while ((obj = Reflect.getPrototypeOf(obj))) {
+    let keys = Reflect.ownKeys(obj)
+    keys.forEach(k => methods.add(k))
+  }
+  return methods
+}
 
 const fire = function(input) {
   if (isClass(input)) {
@@ -45,7 +61,17 @@ const fire = function(input) {
       return parseFn(argv)(input)
 
     case 'object':
-      const method = argv._[0]
+      console.log(Object.getOwnPropertyNames(input))
+      const method = Object.getOwnPropertyNames(input).find(k => {
+        return argv._.includes(input[k].name)
+      })
+
+      if (!method) {
+        throw Error(`No method found`)
+      }
+
+      argv._ = argv._.filter(k => k != method)
+
       return parseFn(argv)(input[method])
 
       console.log(
