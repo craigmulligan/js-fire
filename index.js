@@ -49,30 +49,53 @@ function getAllMethodNames(obj) {
   return methods
 }
 
-const fire = function(input) {
-  if (isClass(input)) {
-    // construct class
-    return fire(new input())
+const handleClass = input => {
+  const instance = new input()
+  const proto = Object.getPrototypeOf(instance)
+
+  const method = Object.getOwnPropertyNames(proto).find(k => {
+    return argv._.includes(instance[k].name)
+  })
+
+  if (!method) {
+    throw Error(`No method found`)
   }
 
-  const inputType = typeof input
+  argv._ = argv._.filter(k => k != method)
+
+  return parseFn(argv)(instance[method])
+}
+
+const handleObject = input => {
+  const method = Object.getOwnPropertyNames(input).find(k => {
+    return argv._.includes(input[k].name)
+  })
+
+  if (!method) {
+    throw Error(`No method found`)
+  }
+
+  argv._ = argv._.filter(k => k != method)
+
+  return parseFn(argv)(input[method])
+}
+
+const fire = function(input) {
+  let inputType = typeof input
+
+  if (isClass(input)) {
+    // construct class
+    inputType = 'class'
+  }
+
   switch (inputType) {
+    case 'class':
+      return handleClass(input)
+
     case 'function':
       return parseFn(argv)(input)
-
     case 'object':
-      console.log(Object.getOwnPropertyNames(input))
-      const method = Object.getOwnPropertyNames(input).find(k => {
-        return argv._.includes(input[k].name)
-      })
-
-      if (!method) {
-        throw Error(`No method found`)
-      }
-
-      argv._ = argv._.filter(k => k != method)
-
-      return parseFn(argv)(input[method])
+      return handleObject(input)
 
       console.log(
         `js-fire can only handle functions or objects, you gave a {inputType}`,
