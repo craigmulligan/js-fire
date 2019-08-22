@@ -1,6 +1,4 @@
-const minimist = require('minimist')
 const argv = require('minimist')(process.argv.slice(2))
-const inspect = require('util').inspect
 
 function introspect(fn) {
   if (typeof fn === 'function') {
