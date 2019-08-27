@@ -34,6 +34,10 @@ class Calculator {
   double(number) {
     return 2 * number
   }
+
+  add(n1 = 10, n2) {
+    return n1 + n2
+  }
 }
 fire(Calculator)
 ```
@@ -42,6 +46,20 @@ Then, from the command line, you can run:
 
 ```bash
 node calculator.js double --number=15  # 30
+```
+
+Automactic --help command.
+
+```bash
+node calculator.js --help
+
+USAGE:
+	node calculator.js <COMMAND>
+
+	COMMANDS:
+
+	double  --number=<number>
+	add  --n1=<10>  --n2=<n2>
 ```
 
 For additional examples, see [/examples](/examples).
