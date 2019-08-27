@@ -1,20 +1,58 @@
 const argv = require('minimist')(process.argv.slice(2))
 
-function introspect(fn) {
+const introspect = fn => {
+  // returns array of args if there is a default arg it returns it with array of arrays:
+  // eg [arg1, [arg2, <default>], arg3]
+
   if (typeof fn === 'function') {
     const argumentsRegExp = /\((.+)\)|^[^=>]+(?=\b\s=>)/
-    const noiseRegExp = /\s|\/\*[\s\S]*\*\/|^\(|\)$|=.*?(,|$)/g
+    const noiseRegExp = /\s|\/\*[\s\S]*\*\/|^\(|\)$|=.w?(,|$)/g
 
     const res = argumentsRegExp.exec(fn.toString())
+
     return res
       ? res[0]
-          .trim()
           .replace(noiseRegExp, '')
           .split(',')
+          .map(s => {
+            if (s.includes('=')) {
+              return s.split('=')
+            }
+            return s
+          })
       : []
   } else {
     throw new Error('NOT_A_FUNCTION')
   }
+}
+
+const isHelp = argv => {
+  if (argv['help']) {
+    return true
+  }
+  return false
+}
+
+const usageText = subcommand => {
+  const splitArgs = process.argv[1].split('/')
+  const cmd = splitArgs[splitArgs.length - 1]
+
+  return `USAGE:\n\tnode ${cmd} ${subcommand ? subcommand : ''}`
+}
+
+const flagsText = args => {
+  if (args.length > 0) {
+    return args
+      .map(arg => {
+        if (Array.isArray(arg)) {
+          return ' --' + arg[0] + '=<' + arg[1] + '>' + ' '
+        }
+
+        return ' --' + arg + '=<' + arg + '>' + ' '
+      })
+      .join('')
+  }
+  return '\n'
 }
 
 const print = data => {
@@ -24,7 +62,10 @@ const print = data => {
 const parseFn = argv => async fn => {
   const args = introspect(fn)
   const values = args.map((name, i) => {
-    // if it's a named param then we
+    if (Array.isArray(name)) {
+      return argv[name[0]]
+    }
+
     if (argv[name]) {
       return argv[name]
     }
@@ -36,67 +77,70 @@ const parseFn = argv => async fn => {
   print(result)
 }
 
-const isClass = fn => /class/.test(fn.toString())
-
-function getAllMethodNames(obj) {
-  let methods = new Set()
-  while ((obj = Reflect.getPrototypeOf(obj))) {
-    let keys = Reflect.ownKeys(obj)
-    keys.forEach(k => methods.add(k))
-  }
-  return methods
-}
-
 const handleClass = input => {
   const instance = new input()
   const proto = Object.getPrototypeOf(instance)
+  const availableMethods = Object.getOwnPropertyNames(proto).filter(
+    m => m !== 'constructor',
+  )
 
-  const method = Object.getOwnPropertyNames(proto).find(k => {
-    return argv._.includes(instance[k].name)
-  })
-
-  if (!method) {
-    throw Error(`No method found`)
-  }
-
-  argv._ = argv._.filter(k => k != method)
-
-  return parseFn(argv)(instance[method])
+  return handleObject(instance, availableMethods)
 }
 
-const handleObject = input => {
-  const method = Object.getOwnPropertyNames(input).find(k => {
+const handleObject = (input, methods) => {
+  const method = methods.find(k => {
     return argv._.includes(input[k].name)
   })
 
   if (!method) {
-    throw Error(`No method found`)
+    const cmdHelpText = methods.reduce((acc, key) => {
+      const args = introspect(input[key])
+      acc = acc + '\t' + key + ' ' + flagsText(args) + '\n'
+      return acc
+    }, ``)
+
+    print(usageText('<COMMAND>') + '\n\n\tCOMMANDS:\n\n' + cmdHelpText)
+    return
   }
 
   argv._ = argv._.filter(k => k != method)
 
+  if (isHelp(argv)) {
+    print(usageText(method) + flagsText(introspect(input[method])))
+    return
+  }
+
   return parseFn(argv)(input[method])
 }
 
-const fire = function(input) {
-  let inputType = typeof input
-
+const isClass = fn => /class/.test(fn.toString())
+const getType = input => {
   if (isClass(input)) {
-    // construct class
-    inputType = 'class'
+    return 'class'
   }
 
-  switch (inputType) {
+  return typeof input
+}
+
+const fire = function(input) {
+  switch (getType(input)) {
+    case 'function':
+      if (isHelp(argv)) {
+        print(usageText() + flagsText(introspect(input)))
+        return
+      }
+      return parseFn(argv)(input)
+    case 'object':
+      const availableMethods = Object.getOwnPropertyNames(input)
+      return handleObject(input, availableMethods)
     case 'class':
       return handleClass(input)
 
-    case 'function':
-      return parseFn(argv)(input)
-    case 'object':
-      return handleObject(input)
-
+    default:
       console.log(
-        `js-fire can only handle functions or objects, you gave a {inputType}`,
+        `js-fire can only handle functions or objects, you gave a ${getType(
+          input,
+        )}`,
       )
   }
 }

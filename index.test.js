@@ -1,140 +1,109 @@
 const fire = require('./')
 const { exec } = require('child_process')
 
-describe('js-fire', () => {
-  test('functions input with no arg', done => {
-    res = exec(
-      'node examples/double.js',
+const cmd = argv => {
+  return new Promise((res, rej) => {
+    exec(
+      argv,
       {
         cwd: __dirname,
       },
-      (error, stdout, stderr) => {
-        expect(stdout.trim()).toEqual('')
-        done()
+      (err, stdout, stderr) => {
+        if (err) {
+          rej(err)
+        }
+        res(stdout)
       },
     )
   })
+}
 
-  test('functions works with default as', done => {
-    res = exec(
-      'node examples/defaults.js',
-      {
-        cwd: __dirname,
-      },
-      (error, stdout, stderr) => {
-        expect(stdout.trim()).toEqual('40')
-        done()
-      },
-    )
+describe('js-fire', () => {
+  describe('function', () => {
+    test('functions works with default as', async () => {
+      const stdout = await cmd('node examples/function.js')
+      expect(stdout.trim()).toEqual('40')
+    })
+    test('helpText', async () => {
+      const stdout = await cmd('node examples/function.js --help')
+      expect(stdout).toMatchSnapshot()
+    })
+  })
+
+  describe('arrow function', () => {
+    test('functions works unnamed arg', async () => {
+      const stdout = await cmd('node examples/arrow-function.js 20')
+      expect(stdout.trim()).toEqual('40')
+    })
+    test('helpText', async () => {
+      const stdout = await cmd('node examples/arrow-function.js --help')
+      expect(stdout).toMatchSnapshot()
+    })
   })
 
   describe('object', () => {
-    test('half', done => {
-      res = exec(
-        'node examples/object.js half --number 20',
-        {
-          cwd: __dirname,
-        },
-        (error, stdout, stderr) => {
-          expect(stdout.trim()).toEqual('10')
-          done()
-        },
-      )
+    test('half', async () => {
+      const stdout = await cmd('node examples/object.js half --number 20')
+      expect(stdout.trim()).toEqual('10')
     })
 
-    test('double', done => {
-      res = exec(
-        'node examples/object.js double --number 20',
-        {
-          cwd: __dirname,
-        },
-        (error, stdout, stderr) => {
-          expect(stdout.trim()).toEqual('40')
-          done()
-        },
-      )
+    test('double', async () => {
+      const stdout = await cmd('node examples/object.js double --number 20')
+      expect(stdout.trim()).toEqual('40')
     })
 
-    test('works without named args', done => {
-      res = exec(
-        'node examples/object.js double 20',
-        {
-          cwd: __dirname,
-        },
-        (error, stdout, stderr) => {
-          expect(stdout.trim()).toEqual('40')
-          done()
-        },
-      )
+    test('works without named args', async () => {
+      const stdout = await cmd('node examples/object.js double 20')
+      expect(stdout.trim()).toEqual('40')
+    })
+
+    test('helpText', async () => {
+      const stdout = await cmd('node examples/object.js --help')
+      expect(stdout).toMatchSnapshot()
+    })
+
+    test('helpText with subcommand', async () => {
+      const stdout = await cmd('node examples/object.js double --help')
+      expect(stdout).toMatchSnapshot()
     })
   })
 
   describe('class', () => {
-    test('half', done => {
-      res = exec(
-        'node examples/class.js half --number 20',
-        {
-          cwd: __dirname,
-        },
-        (error, stdout, stderr) => {
-          expect(stdout.trim()).toEqual('10')
-          done()
-        },
-      )
+    test('half', async () => {
+      const stdout = await cmd('node examples/class.js double --number 5')
+      expect(stdout.trim()).toEqual('10')
     })
 
-    test('triple', done => {
-      res = exec(
-        'node examples/class.js triple',
-        {
-          cwd: __dirname,
-        },
-        (error, stdout, stderr) => {
-          expect(stdout.trim()).toEqual('40')
-          done()
-        },
-      )
+    test('triple', async () => {
+      const stdout = await cmd('node examples/class.js triple')
+      expect(stdout.trim()).toEqual('40')
+    })
+
+    test('helpText', async () => {
+      const stdout = await cmd('node examples/class.js --help')
+      expect(stdout).toMatchSnapshot()
+    })
+
+    test('helpText with subcommand', async () => {
+      const stdout = await cmd('node examples/class.js double --help')
+      expect(stdout).toMatchSnapshot()
     })
   })
 
-  test('async functions', done => {
-    res = exec(
-      'node examples/async.js --number 20',
-      {
-        cwd: __dirname,
-      },
-      (error, stdout, stderr) => {
-        expect(stdout.trim()).toEqual('40')
-        done()
-      },
-    )
+  test('async functions', async () => {
+    const stdout = await cmd('node examples/async.js --number 20')
+    expect(stdout.trim()).toEqual('40')
   })
 
   describe('multi-args', () => {
-    test('multi unname args', done => {
-      res = exec(
-        'node examples/multi-args.js 30 20',
-        {
-          cwd: __dirname,
-        },
-        (error, stdout, stderr) => {
-          expect(stdout.trim()).toEqual('10')
-          done()
-        },
-      )
+    test('multi unname args', async () => {
+      const stdout = await cmd('node examples/multi-args.js 30 20')
+      expect(stdout.trim()).toEqual('10')
     })
   })
 
-  test('multi named args', done => {
-    res = exec(
-      'node examples/multi-args.js --b 30 --a 20',
-      {
-        cwd: __dirname,
-      },
-      (error, stdout, stderr) => {
-        expect(stdout.trim()).toEqual('-10')
-        done()
-      },
-    )
+  test('multi named args', async () => {
+    const stdout = await cmd('node examples/multi-args.js --b 30 --a 20')
+    expect(stdout.trim()).toEqual('-10')
   })
 })

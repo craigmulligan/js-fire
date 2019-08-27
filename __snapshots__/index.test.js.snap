@@ -1,0 +1,49 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`js-fire arrow function helpText 1`] = `
+"USAGE:
+	node arrow-function.js  --number=<number>
+"
+`;
+
+exports[`js-fire class helpText 1`] = `
+"USAGE:
+	node class.js <COMMAND>
+
+	COMMANDS:
+
+	double  --number=<number> 
+	half  --number=<number> 
+	triple  --number=<20>  --noop=<false> 
+	add  --n1=<n1>  --n2=<n2>  --n3=<n3>
+"
+`;
+
+exports[`js-fire class helpText with subcommand 1`] = `
+"USAGE:
+	node class.js double --number=<number>
+"
+`;
+
+exports[`js-fire function helpText 1`] = `
+"USAGE:
+	node function.js  --number=<20>
+"
+`;
+
+exports[`js-fire object helpText 1`] = `
+"USAGE:
+	node object.js <COMMAND>
+
+	COMMANDS:
+
+	half  --number=<number> 
+	double  --number=<number>
+"
+`;
+
+exports[`js-fire object helpText with subcommand 1`] = `
+"USAGE:
+	node object.js double --number=<number>
+"
+`;
