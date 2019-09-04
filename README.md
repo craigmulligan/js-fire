@@ -35,7 +35,7 @@ class Calculator {
     return 2 * number
   }
 
-  add(n1 = 10, n2) {
+  add(n1 = Math.PI, n2) {
     return n1 + n2
   }
 }
@@ -59,7 +59,7 @@ USAGE:
 	COMMANDS:
 
 	double  --number=<number>
-	add  --n1=<10>  --n2=<n2>
+	add  --n1=3.141592653589793 --n2=<n2>
 ```
 
 For additional examples, see [/examples](/examples).

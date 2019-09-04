@@ -106,4 +106,15 @@ describe('js-fire', () => {
     const stdout = await cmd('node examples/multi-args.js --b 30 --a 20')
     expect(stdout.trim()).toEqual('-10')
   })
+
+  test('works with default (eval) values', async () => {
+    const stdout = await cmd('node examples/multi-args.js --b 1')
+    const answer = Math.PI - 1
+    expect(stdout.trim()).toEqual(answer.toString())
+  })
+
+  test('helpText', async () => {
+    const stdout = await cmd('node examples/multi-args.js --help')
+    expect(stdout.trim()).toMatchSnapshot()
+  })
 })

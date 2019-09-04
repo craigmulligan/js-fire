@@ -14,7 +14,7 @@ exports[`js-fire class helpText 1`] = `
 
 	double  --number=<number> 
 	half  --number=<number> 
-	triple  --number=<20>  --noop=<false> 
+	triple  --number=20  --noop=false 
 	add  --n1=<n1>  --n2=<n2>  --n3=<n3>
 "
 `;
@@ -27,8 +27,13 @@ exports[`js-fire class helpText with subcommand 1`] = `
 
 exports[`js-fire function helpText 1`] = `
 "USAGE:
-	node function.js  --number=<20>
+	node function.js  --number=20
 "
+`;
+
+exports[`js-fire helpText 1`] = `
+"USAGE:
+	node multi-args.js  --a=3.141592653589793  --b=20  --noop=false  --randomString=hiii"
 `;
 
 exports[`js-fire object helpText 1`] = `
