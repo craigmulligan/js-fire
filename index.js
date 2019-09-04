@@ -6,19 +6,19 @@ const introspect = fn => {
 
   if (typeof fn === 'function') {
     const argumentsRegExp = /\((.+)\)|^[^=>]+(?=\b\s=>)/
-    const noiseRegExp = /\s|\/\*[\s\S]*\*\/|^\(|\)$|=.w?(,|$)/g
-
     const res = argumentsRegExp.exec(fn.toString())
 
     return res
       ? res[0]
-          .replace(noiseRegExp, '')
+          // replace comments and parenthesis
+          .replace(/(\/\*[\s\S]*?\*\/|\(|\))/gm, '')
           .split(',')
           .map(s => {
             if (s.includes('=')) {
-              return s.split('=')
+              const param = s.split('=')
+              return [param[0].trim(), eval(param[1])]
             }
-            return s
+            return s.trim()
           })
       : []
   } else {
@@ -45,7 +45,7 @@ const flagsText = args => {
     return args
       .map(arg => {
         if (Array.isArray(arg)) {
-          return ' --' + arg[0] + '=<' + arg[1] + '>' + ' '
+          return ' --' + arg[0] + '=' + arg[1] + ' '
         }
 
         return ' --' + arg + '=<' + arg + '>' + ' '
@@ -63,7 +63,9 @@ const parseFn = argv => async fn => {
   const args = introspect(fn)
   const values = args.map((name, i) => {
     if (Array.isArray(name)) {
-      return argv[name[0]]
+      if (argv[name[0]]) {
+        return argv[name[0]]
+      }
     }
 
     if (argv[name]) {
