@@ -15,6 +15,9 @@
     "jest": "^23.5.0"
   },
   "dependencies": {
-    "minimist": "^1.2.0"
+    "lodash.isfunction": "^3.0.9",
+    "lodash.isplainobject": "^4.0.6",
+    "minimist": "^1.2.0",
+    "tosource": "^1.0.0"
   }
 }

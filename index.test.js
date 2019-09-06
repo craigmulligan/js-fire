@@ -57,6 +57,13 @@ describe('js-fire', () => {
       expect(stdout.trim()).toEqual('40')
     })
 
+    test('works with deeply nested objects', async () => {
+      const stdout = await cmd(
+        'node examples/object.js misc hello --name hobochild',
+      )
+      expect(stdout.trim()).toEqual('hi hobochild')
+    })
+
     test('helpText', async () => {
       const stdout = await cmd('node examples/object.js --help')
       expect(stdout).toMatchSnapshot()
@@ -64,28 +71,6 @@ describe('js-fire', () => {
 
     test('helpText with subcommand', async () => {
       const stdout = await cmd('node examples/object.js double --help')
-      expect(stdout).toMatchSnapshot()
-    })
-  })
-
-  describe('class', () => {
-    test('half', async () => {
-      const stdout = await cmd('node examples/class.js double --number 5')
-      expect(stdout.trim()).toEqual('10')
-    })
-
-    test('triple', async () => {
-      const stdout = await cmd('node examples/class.js triple')
-      expect(stdout.trim()).toEqual('40')
-    })
-
-    test('helpText', async () => {
-      const stdout = await cmd('node examples/class.js --help')
-      expect(stdout).toMatchSnapshot()
-    })
-
-    test('helpText with subcommand', async () => {
-      const stdout = await cmd('node examples/class.js double --help')
       expect(stdout).toMatchSnapshot()
     })
   })

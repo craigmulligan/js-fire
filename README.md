@@ -3,7 +3,7 @@
 > A javascript clone of [google/python-fire](https://github.com/google/python-fire)
 
 js-fire is a library for automatically generating command line interfaces
-(CLIs) from any js object.
+(CLIs) from most js objects.
 
 * js Fire is a simple way to create a CLI in js.
 * js Fire helps with exploring existing code or turning other people's code
@@ -30,16 +30,22 @@ Here's an example of calling Fire on a class.
 ```javascript
 const fire = require('js-fire')
 
-class Calculator {
-  double(number) {
+const calculator = {
+  double: number => {
+    // I double things
     return 2 * number
-  }
-
-  add(n1 = Math.PI, n2) {
+  },
+  add: (n1 = Math.PI, n2) => {
     return n1 + n2
-  }
+  },
+  misc: {
+    year: () => '1999',
+    brand: () => 'casio',
+    hello: name => `hello ${name}`,
+  },
 }
-fire(Calculator)
+
+fire(calculator)
 ```
 
 Then, from the command line, you can run:
@@ -48,18 +54,28 @@ Then, from the command line, you can run:
 node calculator.js double --number=15  # 30
 ```
 
+```bash
+node calculator.js misc hello hobochild  # 'hi hobochild'
+```
+
 Automactic --help command.
 
 ```bash
 node calculator.js --help
 
 USAGE:
-	node calculator.js <COMMAND>
+	node object.js
 
-	COMMANDS:
+COMMANDS:
 
+	half  --number=<number>
 	double  --number=<number>
-	add  --n1=3.141592653589793 --n2=<n2>
+	add  --n1=3.141592653589793  --n2=<n2>
+
+	misc
+		year
+		brand
+		hello  --name=<name>
 ```
 
 For additional examples, see [/examples](/examples).
