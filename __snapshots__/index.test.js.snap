@@ -6,25 +6,6 @@ exports[`js-fire arrow function helpText 1`] = `
 "
 `;
 
-exports[`js-fire class helpText 1`] = `
-"USAGE:
-	node class.js <COMMAND>
-
-	COMMANDS:
-
-	double  --number=<number> 
-	half  --number=<number> 
-	triple  --number=20  --noop=false 
-	add  --n1=<n1>  --n2=<n2>  --n3=<n3>
-"
-`;
-
-exports[`js-fire class helpText with subcommand 1`] = `
-"USAGE:
-	node class.js double --number=<number>
-"
-`;
-
 exports[`js-fire function helpText 1`] = `
 "USAGE:
 	node function.js  --number=20
@@ -38,12 +19,18 @@ exports[`js-fire helpText 1`] = `
 
 exports[`js-fire object helpText 1`] = `
 "USAGE:
-	node object.js <COMMAND>
+	node object.js 
 
-	COMMANDS:
+COMMANDS:
 
-	half  --number=<number> 
-	double  --number=<number>
+	half <flags> --number=<number> 
+	double <flags> --number=<number> 
+	add <flags> --n1=3.141592653589793  --n2=<n2> 
+
+	misc
+		year <flags>
+		brand <flags>
+		hello <flags> --name=<name>
 "
 `;
 

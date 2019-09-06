@@ -1,4 +1,7 @@
 const argv = require('minimist')(process.argv.slice(2))
+const isObject = require('lodash.isplainobject')
+const isFunction = require('lodash.isfunction')
+const toSource = require('tosource')
 
 const introspect = fn => {
   // returns array of args if there is a default arg it returns it with array of arrays:
@@ -22,8 +25,25 @@ const introspect = fn => {
           })
       : []
   } else {
-    throw new Error('NOT_A_FUNCTION')
+    throw new TypeError('NOT_A_FUNCTION')
   }
+}
+
+const scrapeComments = input => {
+  // https://github.com/sindresorhus/comment-regex
+  const line = () => /(?:^|\s)\/\/(.+?)$/gms
+  const block = () => /\/\*(.*?)\*\//gms
+
+  const comment = new RegExp(
+    `(?:${line().source})|(?:${block().source})`,
+    'gms',
+  )
+
+  const m = input.toString().match(comment)
+  if (m) {
+    return m[0]
+  }
+  return
 }
 
 const isHelp = argv => {
@@ -52,14 +72,14 @@ const flagsText = args => {
       })
       .join('')
   }
-  return '\n'
+  return ''
 }
 
 const print = data => {
   console.log(String(data).trim())
 }
 
-const parseFn = argv => async fn => {
+const parseFn = argv => async (fn, offset = 0) => {
   const args = introspect(fn)
   const values = args.map((name, i) => {
     if (Array.isArray(name)) {
@@ -72,79 +92,94 @@ const parseFn = argv => async fn => {
       return argv[name]
     }
 
-    return argv['_'][i]
+    return argv['_'][offset + i]
   })
 
   const result = await fn(...values)
   print(result)
 }
 
-const handleClass = input => {
-  const instance = new input()
-  const proto = Object.getPrototypeOf(instance)
-  const availableMethods = Object.getOwnPropertyNames(proto).filter(
-    m => m !== 'constructor',
+const functionHelp = (fn, depth = 1) => {
+  const args = introspect(fn)
+  return '\t'.repeat(depth) + fn.name + ' <flags>' + flagsText(args) + '\n'
+}
+
+const subcommandHelp = (input, depth = 1) => {
+  return Object.getOwnPropertyNames(input).reduce((acc, key) => {
+    if (isObject(input[key])) {
+      acc = acc + '\n\t' + key + '\n' + subcommandHelp(input[key], depth + 1)
+      return acc
+    }
+
+    if (isFunction(input[key])) {
+      acc = acc + '\t'.repeat(depth) + functionHelp(input[key])
+    }
+    return acc
+  }, '')
+}
+
+const handleFunction = (fn, name, offset = 0) => {
+  if (isHelp(argv)) {
+    const description = scrapeComments(fn)
+    print(
+      usageText(name) +
+        flagsText(introspect(fn)) +
+        (description ? '\n\nDESCRIPTION: ' + '\n' + description + '\n' : ''),
+    )
+    return
+  }
+
+  return parseFn(argv)(fn, offset)
+}
+
+const handleObject = input => {
+  // find object in question (derived from argv)
+
+  const [keys, method] = argv._.reduce(
+    ([ks, m], arg, i) => {
+      if (Object.getOwnPropertyNames(m).includes(arg)) {
+        return [[...ks, arg], m[arg]]
+      }
+      return [ks, m]
+    },
+    [[], input],
   )
 
-  return handleObject(instance, availableMethods)
-}
-
-const handleObject = (input, methods) => {
-  const method = methods.find(k => {
-    return argv._.includes(input[k].name)
-  })
-
-  if (!method) {
-    const cmdHelpText = methods.reduce((acc, key) => {
-      const args = introspect(input[key])
-      acc = acc + '\t' + key + ' ' + flagsText(args) + '\n'
-      return acc
-    }, ``)
-
-    print(usageText('<COMMAND>') + '\n\n\tCOMMANDS:\n\n' + cmdHelpText)
-    return
+  if (isFunction(method)) {
+    return handleFunction(method, keys[keys.length - 1], keys.length)
   }
 
-  argv._ = argv._.filter(k => k != method)
+  if (isObject(method)) {
+    if (isHelp(argv)) {
+      const description = scrapeComments(method)
+      const cmdHelpText = subcommandHelp(method, 0)
+      print(
+        usageText(keys.join(' ')) +
+          (description
+            ? '\n\nDESCRIPTION: ' + '\n\t' + description + '\n'
+            : '') +
+          '\n\nCOMMANDS:\n\n' +
+          cmdHelpText,
+      )
+      return
+    }
 
-  if (isHelp(argv)) {
-    print(usageText(method) + flagsText(introspect(input[method])))
-    return
+    return handleObject(method, Object.getOwnPropertyNames(method))
   }
 
-  return parseFn(argv)(input[method])
-}
-
-const isClass = fn => /class/.test(fn.toString())
-const getType = input => {
-  if (isClass(input)) {
-    return 'class'
-  }
-
-  return typeof input
+  return parseFn(argv)(method, keys.length)
 }
 
 const fire = function(input) {
-  switch (getType(input)) {
-    case 'function':
-      if (isHelp(argv)) {
-        print(usageText() + flagsText(introspect(input)))
-        return
-      }
-      return parseFn(argv)(input)
-    case 'object':
-      const availableMethods = Object.getOwnPropertyNames(input)
-      return handleObject(input, availableMethods)
-    case 'class':
-      return handleClass(input)
-
-    default:
-      console.log(
-        `js-fire can only handle functions or objects, you gave a ${getType(
-          input,
-        )}`,
-      )
+  if (isFunction(input)) {
+    return handleFunction(input)
   }
+
+  if (isObject(input)) {
+    return handleObject(input)
+  }
+
+  throw TypeError('js-fire can only handle functions or objects')
 }
 
 module.exports = fire
