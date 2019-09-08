@@ -21,6 +21,10 @@ exports[`js-fire object helpText 1`] = `
 "USAGE:
 	node object.js 
 
+DESCRIPTION: 
+	I am a math machine
+
+
 COMMANDS:
 
 	half <flags> --number=<number> 

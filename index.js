@@ -4,6 +4,12 @@ const isFunction = require('lodash.isfunction')
 const autocompletePrompt = require('cli-autocomplete')
 const textPrompt = require('text-prompt')
 
+const getProps = instance => {
+  return Object.getOwnPropertyNames(instance).filter(
+    k => k != '__description__',
+  )
+}
+
 const introspect = fn => {
   // returns array of args if there is a default arg it returns it with array of arrays:
   // eg [arg1, [arg2, <default>], arg3]
@@ -31,6 +37,10 @@ const introspect = fn => {
 }
 
 const scrapeComments = input => {
+  if (input['__description__']) {
+    return input['__description__']
+  }
+
   // https://github.com/sindresorhus/comment-regex
   const line = () => /(?:^|\s)\/\/(.+?)$/gms
   const block = () => /\/\*(.*?)\*\//gms
@@ -98,7 +108,7 @@ const functionHelp = (fn, depth = 1) => {
 }
 
 const subcommandHelp = (input, depth = 1) => {
-  return Object.getOwnPropertyNames(input).reduce((acc, key) => {
+  return getProps(input).reduce((acc, key) => {
     if (isObject(input[key])) {
       acc = acc + '\n\t' + key + '\n' + subcommandHelp(input[key], depth + 1)
       return acc
@@ -112,7 +122,7 @@ const subcommandHelp = (input, depth = 1) => {
 }
 
 const getSubCommands = input => {
-  return Object.getOwnPropertyNames(input).reduce((acc, key) => {
+  return getProps(input).reduce((acc, key) => {
     let description = scrapeComments(input[key]) || ''
     acc.push({ title: key + '\t' + description, value: input[key] })
     return acc
@@ -184,7 +194,7 @@ const handleObject = async input => {
   // find object in question (derived from argv)
   const [keys, method] = argv._.reduce(
     ([ks, m], arg, i) => {
-      if (Object.getOwnPropertyNames(m).includes(arg)) {
+      if (getProps(m).includes(arg)) {
         return [[...ks, arg], m[arg]]
       }
       return [ks, m]

@@ -1,6 +1,7 @@
 const fire = require('../')
 
 const calculator = {
+  __description__: 'I am a math machine',
   half: number => +number / 2,
   double: number => +number * 2,
   add: (n1 = Math.PI, n2) => {
