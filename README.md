@@ -79,6 +79,6 @@ COMMANDS:
 
 Automactic `--interactive` mode:
 
-[![asciicast](https://asciinema.org/a/QdxxOZgsK4Wp0nxT7ZEn6mXIi)](https://asciinema.org/a/QdxxOZgsK4Wp0nxT7ZEn6mXIi)
+[![asciicast](https://asciinema.org/a/QdxxOZgsK4Wp0nxT7ZEn6mXIi.svg)](https://asciinema.org/a/QdxxOZgsK4Wp0nxT7ZEn6mXIi)
 
 For additional examples, see [/examples](/examples).
