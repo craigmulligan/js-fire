@@ -1,7 +1,6 @@
 const argv = require('minimist')(process.argv.slice(2))
 const isObject = require('lodash.isplainobject')
 const isFunction = require('lodash.isfunction')
-const toSource = require('tosource')
 
 const introspect = fn => {
   // returns array of args if there is a default arg it returns it with array of arrays:
