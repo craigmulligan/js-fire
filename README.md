@@ -1,6 +1,6 @@
 # js-fire
 
-> A javascript clone of [google/python-fire](https://github.com/google/python-fire)
+> A javascript implementation of [google/python-fire](https://github.com/google/python-fire)
 
 js-fire is a library for automatically generating command line interfaces
 (CLIs) from most js objects.
@@ -22,10 +22,9 @@ npm install js-fire
 
 ## Basic Usage
 
-You can call `Fire` on any js object:<br>
-functions, classes, objects.
+You can call `Fire` on any functions and objects:<br>
 
-Here's an example of calling Fire on a class.
+Here's an example of calling Fire on a object, you can infinitely nest objects to create subcommands.
 
 ```javascript
 const fire = require('js-fire')
@@ -58,7 +57,7 @@ node calculator.js double --number=15  # 30
 node calculator.js misc hello hobochild  # 'hi hobochild'
 ```
 
-Automactic --help command.
+Automactic `--help` command.
 
 ```bash
 node calculator.js --help
@@ -77,5 +76,9 @@ COMMANDS:
 		brand
 		hello  --name=<name>
 ```
+
+Automactic `--interactive` mode:
+
+[![asciicast](https://asciinema.org/a/QdxxOZgsK4Wp0nxT7ZEn6mXIi)](https://asciinema.org/a/QdxxOZgsK4Wp0nxT7ZEn6mXIi)
 
 For additional examples, see [/examples](/examples).
