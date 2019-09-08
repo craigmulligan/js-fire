@@ -1,6 +1,8 @@
 const argv = require('minimist')(process.argv.slice(2))
 const isObject = require('lodash.isplainobject')
 const isFunction = require('lodash.isfunction')
+const autocompletePrompt = require('cli-autocomplete')
+const textPrompt = require('text-prompt')
 
 const introspect = fn => {
   // returns array of args if there is a default arg it returns it with array of arrays:
@@ -45,12 +47,9 @@ const scrapeComments = input => {
   return
 }
 
-const isHelp = argv => {
-  if (argv['help']) {
-    return true
-  }
-  return false
-}
+const isInteractive = argv => (argv['interactive'] || argv['i'] ? true : false)
+const isHelp = argv => (argv['help'] || argv['h'] ? true : false)
+const hasNoCmd = argv => argv._.length == 0
 
 const usageText = subcommand => {
   const splitArgs = process.argv[1].split('/')
@@ -74,10 +73,6 @@ const flagsText = args => {
   return ''
 }
 
-const print = data => {
-  console.log(String(data).trim())
-}
-
 const parseFn = argv => async (fn, offset = 0) => {
   const args = introspect(fn)
   const values = args.map((name, i) => {
@@ -94,8 +89,7 @@ const parseFn = argv => async (fn, offset = 0) => {
     return argv['_'][offset + i]
   })
 
-  const result = await fn(...values)
-  print(result)
+  return Promise.resolve(fn(...values))
 }
 
 const functionHelp = (fn, depth = 1) => {
@@ -117,23 +111,77 @@ const subcommandHelp = (input, depth = 1) => {
   }, '')
 }
 
-const handleFunction = (fn, name, offset = 0) => {
+const getSubCommands = input => {
+  return Object.getOwnPropertyNames(input).reduce((acc, key) => {
+    let description = scrapeComments(input[key]) || ''
+    acc.push({ title: key + '\t' + description, value: input[key] })
+    return acc
+  }, [])
+}
+
+const getFlagsInput = (acc, flags, i) => {
+  const flag = flags[i]
+
+  return new Promise((resolve, reject) => {
+    const opts = {}
+    let message = `--${flag}`
+
+    if (Array.isArray(flag)) {
+      message = `--${flag[0]}`
+      opts['value'] = `${flag[1]}`
+    }
+
+    textPrompt(message, opts)
+      .on('submit', v => {
+        acc.push(v)
+        if (i === flags.length - 1) {
+          resolve(acc)
+        } else {
+          resolve(getFlagsInput(acc, flags, i + 1))
+        }
+      })
+      .on('abort', v => reject(v))
+  })
+}
+
+const handleFunction = async (fn, name, offset = 0) => {
+  if (isInteractive(argv)) {
+    const args = introspect(fn)
+    let values = []
+    if (args.length > 0) {
+      values = await getFlagsInput([], args, 0)
+    }
+    const result = await fn(...values)
+    return result
+  }
+
   if (isHelp(argv)) {
     const description = scrapeComments(fn)
-    print(
+    return (
       usageText(name) +
-        flagsText(introspect(fn)) +
-        (description ? '\n\nDESCRIPTION: ' + '\n' + description + '\n' : ''),
+      flagsText(introspect(fn)) +
+      (description ? '\n\nDESCRIPTION: ' + '\n' + description + '\n' : '')
     )
-    return
   }
 
   return parseFn(argv)(fn, offset)
 }
 
-const handleObject = input => {
-  // find object in question (derived from argv)
+const getSuggestion = subcommands => {
+  const suggestsubCommands = input =>
+    Promise.resolve(
+      subcommands.filter(cmd => cmd.title.slice(0, input.length) === input),
+    )
 
+  return new Promise((resolve, reject) => {
+    autocompletePrompt('Tab and enter to select a command', suggestsubCommands)
+      .on('abort', reject)
+      .on('submit', resolve)
+  })
+}
+
+const handleObject = async input => {
+  // find object in question (derived from argv)
   const [keys, method] = argv._.reduce(
     ([ks, m], arg, i) => {
       if (Object.getOwnPropertyNames(m).includes(arg)) {
@@ -149,18 +197,21 @@ const handleObject = input => {
   }
 
   if (isObject(method)) {
-    if (isHelp(argv)) {
+    if (isInteractive(argv)) {
+      const subcommands = getSubCommands(method)
+      const cmd = await getSuggestion(subcommands)
+      return fire(cmd)
+    }
+
+    if (isHelp(argv) || hasNoCmd(argv)) {
       const description = scrapeComments(method)
       const cmdHelpText = subcommandHelp(method, 0)
-      print(
+      return (
         usageText(keys.join(' ')) +
-          (description
-            ? '\n\nDESCRIPTION: ' + '\n\t' + description + '\n'
-            : '') +
-          '\n\nCOMMANDS:\n\n' +
-          cmdHelpText,
+        (description ? '\n\nDESCRIPTION: ' + '\n\t' + description + '\n' : '') +
+        '\n\nCOMMANDS:\n\n' +
+        cmdHelpText
       )
-      return
     }
 
     return handleObject(method, Object.getOwnPropertyNames(method))
@@ -169,7 +220,7 @@ const handleObject = input => {
   return parseFn(argv)(method, keys.length)
 }
 
-const fire = function(input) {
+const fire = input => {
   if (isFunction(input)) {
     return handleFunction(input)
   }
@@ -181,4 +232,11 @@ const fire = function(input) {
   throw TypeError('js-fire can only handle functions or objects')
 }
 
-module.exports = fire
+const print = data => {
+  console.log(String(data).trim())
+}
+
+module.exports = input =>
+  fire(input)
+    .then(print)
+    .catch(print)
