@@ -54,7 +54,7 @@ node calculator.js double --number=15  # 30
 ```
 
 ```bash
-node calculator.js misc hello hobochild  # 'hi hobochild'
+node calculator.js misc hello hobochild  # 'hello hobochild'
 ```
 
 Automactic `--help` command.
