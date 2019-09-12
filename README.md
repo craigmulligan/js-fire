@@ -77,7 +77,7 @@ COMMANDS:
 		hello  --name=<name>
 ```
 
-Automactic `--interactive` mode:
+Automatic `--interactive` mode:
 
 [![asciicast](https://asciinema.org/a/QdxxOZgsK4Wp0nxT7ZEn6mXIi.svg)](https://asciinema.org/a/QdxxOZgsK4Wp0nxT7ZEn6mXIi)
 
