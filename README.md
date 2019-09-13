@@ -20,7 +20,7 @@ yarn add js-fire
 npm install js-fire
 ```
 
-## Basic Usage
+## Basic API Usage
 
 You can call `Fire` on any functions and objects:<br>
 
@@ -82,3 +82,49 @@ Automatic `--interactive` mode:
 [![asciicast](https://asciinema.org/a/QdxxOZgsK4Wp0nxT7ZEn6mXIi.svg)](https://asciinema.org/a/QdxxOZgsK4Wp0nxT7ZEn6mXIi)
 
 For additional examples, see [/examples](/examples).
+
+## Basic CLI Usage
+
+js-fire exposes a CLI that takes modulePath and passes it to `js-fire`.
+
+```
+USAGE:
+	js-fire  --modulePath=<modulePath>
+```
+
+### Example
+
+So you can js-fire on _most_ js modules.
+
+```
+js-fire fs writeFileSync --path=hello.txt --data="hiii"
+```
+
+You can also use `interactive` and `help` mode to explore a modules api:
+
+```
+js-fire fs -h
+
+USAGE:
+	js-fire
+
+COMMANDS:
+
+	appendFile <flags> --path=<path>  --data=<data>  --options=<options>  --callback=<callback>
+	appendFileSync <flags> --path=<path>  --data=<data>  --options=<options>
+	access <flags> --path=<path>  --mode=<mode>  --callback=<callback>
+	accessSync <flags> --path=<path>  --mode=<mode>
+	chown <flags> --path=<path>  --uid=<uid>  --gid=<gid>  --callback=<callback>
+	chownSync <flags> --path=<path>  --uid=<uid>  --gid=<gid>
+	chmod <flags> --path=<path>  --mode=<mode>  --callback=<callback>
+	chmodSync <flags> --path=<path>  --mode=<mode>
+	close <flags> --fd=<fd>  --callback=<callback>
+	closeSync <flags> --fd=<fd>
+	copyFile <flags> --src=<src>  --dest=<dest>  --flags=<flags>  --callback=<callback>
+	copyFileSync <flags> --src=<src>  --dest=<dest>  --flags=<flags>
+	createReadStream <flags> --path=<path>  --options=<options>
+	createWriteStream <flags> --path=<path>  --options=<options>
+	exists <flags> --path=<path>  --callback=<callback>
+	existsSync <flags> --path=<path>
+  ...
+```

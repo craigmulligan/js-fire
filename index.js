@@ -1,13 +1,43 @@
-const argv = require('minimist')(process.argv.slice(2))
+const minimist = require('minimist')
 const isObject = require('lodash.isplainobject')
 const isFunction = require('lodash.isfunction')
 const autocompletePrompt = require('cli-autocomplete')
 const textPrompt = require('text-prompt')
+const fs = require('fs')
+
+const functionExists = obj => {
+  if (isFunction(obj)) {
+    return true
+  }
+
+  if (isObject(obj)) {
+    const res = getProps(obj).filter(key => {
+      if (isFunction(obj[key])) {
+        return true
+      }
+
+      if (isObject(obj[key])) {
+        return functionExists(obj[key])
+      }
+
+      return false
+    })
+
+    if (res.length > 0) {
+      return true
+    }
+  }
+
+  return false
+}
 
 const getProps = instance => {
-  return Object.getOwnPropertyNames(instance).filter(
-    k => k != '__description__',
-  )
+  const keys = Object.keys(instance)
+    .filter(k => k != '__description__')
+    .filter(k => !k.startsWith('_'))
+    .filter(k => functionExists(instance[k]))
+
+  return keys
 }
 
 const introspect = fn => {
@@ -22,6 +52,8 @@ const introspect = fn => {
       ? res[0]
           // replace comments and parenthesis
           .replace(/(\/\*[\s\S]*?\*\/|\(|\))/gm, '')
+          // replace async keyword
+          .replace(/async /gm, '')
           .split(',')
           .map(s => {
             if (s.includes('=')) {
@@ -50,6 +82,10 @@ const scrapeComments = input => {
     'gms',
   )
 
+  if (!input.toString) {
+    return
+  }
+
   const m = input.toString().match(comment)
   if (m) {
     return m[0]
@@ -57,15 +93,30 @@ const scrapeComments = input => {
   return
 }
 
+const isTargetCmd = (argv, key) => {
+  return key === argv._[argv._.length - 1]
+}
+
 const isInteractive = argv => (argv['interactive'] || argv['i'] ? true : false)
 const isHelp = argv => (argv['help'] || argv['h'] ? true : false)
 const hasNoCmd = argv => argv._.length == 0
 
-const usageText = subcommand => {
-  const splitArgs = process.argv[1].split('/')
-  const cmd = splitArgs[splitArgs.length - 1]
+const usageText = () => {
+  const cwd = process.cwd()
+  const fullArgs = minimist(process.argv)
+  const stats = fs.lstatSync(fullArgs._[1])
+  let subcommands = fullArgs._
 
-  return `USAGE:\n\tnode ${cmd} ${subcommand ? subcommand : ''}`
+  if (stats.isSymbolicLink()) {
+    // Probably is a better way to test if it's a linked bin
+    // but isSymbolicLink seems to work for now.
+    // this removes node if the second lib
+    subcommands = subcommands.slice(1)
+  }
+
+  subcommands = subcommands.map(c => c.split('/').pop())
+
+  return `USAGE:\n\t${subcommands.join(' ')}`
 }
 
 const flagsText = args => {
@@ -102,9 +153,15 @@ const parseFn = argv => async (fn, offset = 0) => {
   return Promise.resolve(fn(...values))
 }
 
-const functionHelp = (fn, depth = 1) => {
+const functionHelp = (fn, name, depth = 1) => {
   const args = introspect(fn)
-  return '\t'.repeat(depth) + fn.name + ' <flags>' + flagsText(args) + '\n'
+  return (
+    '\t'.repeat(depth) +
+    (name ? name : fn.name) +
+    ' <flags>' +
+    flagsText(args) +
+    '\n'
+  )
 }
 
 const subcommandHelp = (input, depth = 1) => {
@@ -115,8 +172,9 @@ const subcommandHelp = (input, depth = 1) => {
     }
 
     if (isFunction(input[key])) {
-      acc = acc + '\t'.repeat(depth) + functionHelp(input[key])
+      acc = acc + '\t'.repeat(depth) + functionHelp(input[key], key)
     }
+
     return acc
   }, '')
 }
@@ -124,7 +182,13 @@ const subcommandHelp = (input, depth = 1) => {
 const getSubCommands = input => {
   return getProps(input).reduce((acc, key) => {
     let description = scrapeComments(input[key]) || ''
-    acc.push({ title: key + '\t' + description, value: input[key] })
+    acc.push({
+      title: key + '\t' + description,
+      value: {
+        key,
+        instance: input[key],
+      },
+    })
     return acc
   }, [])
 }
@@ -154,8 +218,8 @@ const getFlagsInput = (acc, flags, i) => {
   })
 }
 
-const handleFunction = async (fn, name, offset = 0) => {
-  if (isInteractive(argv)) {
+const handleFunction = argv => async (fn, name, offset = 0) => {
+  if (isInteractive(argv) && isTargetCmd(argv, name)) {
     const args = introspect(fn)
     let values = []
     if (args.length > 0) {
@@ -165,13 +229,21 @@ const handleFunction = async (fn, name, offset = 0) => {
     return result
   }
 
-  if (isHelp(argv)) {
+  if (isHelp(argv) && isTargetCmd(argv, name)) {
     const description = scrapeComments(fn)
     return (
-      usageText(name) +
+      usageText() +
       flagsText(introspect(fn)) +
       (description ? '\n\nDESCRIPTION: ' + '\n' + description + '\n' : '')
     )
+  }
+
+  // if there is a name
+  // it means this is a subcommand so let's
+  // shift the argv
+  if (name) {
+    const cmdIndex = process.argv.findIndex(item => item === name)
+    return parseFn(minimist(process.argv.slice(cmdIndex)))(fn, offset)
   }
 
   return parseFn(argv)(fn, offset)
@@ -184,13 +256,17 @@ const getSuggestion = subcommands => {
     )
 
   return new Promise((resolve, reject) => {
-    autocompletePrompt('Tab and enter to select a command', suggestsubCommands)
+    autocompletePrompt(
+      'Tab and enter to select a command',
+      suggestsubCommands,
+      { limit: -1 },
+    )
       .on('abort', reject)
       .on('submit', resolve)
   })
 }
 
-const handleObject = async input => {
+const handleObject = argv => async input => {
   // find object in question (derived from argv)
   const [keys, method] = argv._.reduce(
     ([ks, m], arg, i) => {
@@ -203,50 +279,69 @@ const handleObject = async input => {
   )
 
   if (isFunction(method)) {
-    return handleFunction(method, keys[keys.length - 1], keys.length)
+    return handleFunction(argv)(method, keys[keys.length - 1], keys.length)
   }
 
   if (isObject(method)) {
     if (isInteractive(argv)) {
       const subcommands = getSubCommands(method)
       const cmd = await getSuggestion(subcommands)
-      return fire(cmd)
+      // adjust the argv with interactive
+      argv._.push(cmd.key)
+
+      if (isFunction(cmd.instance)) {
+        return handleFunction(argv)(
+          cmd.instance,
+          cmd.instance.name,
+          keys.length,
+        )
+      }
+
+      return fire(argv)(cmd.instance)
     }
 
     if (isHelp(argv) || hasNoCmd(argv)) {
       const description = scrapeComments(method)
       const cmdHelpText = subcommandHelp(method, 0)
       return (
-        usageText(keys.join(' ')) +
+        usageText() +
         (description ? '\n\nDESCRIPTION: ' + '\n\t' + description + '\n' : '') +
         '\n\nCOMMANDS:\n\n' +
         cmdHelpText
       )
     }
 
-    return handleObject(method, Object.getOwnPropertyNames(method))
+    return handleObject(method)
   }
 
   return parseFn(argv)(method, keys.length)
 }
 
-const fire = input => {
+const fire = argv => input => {
   if (isFunction(input)) {
-    return handleFunction(input)
+    return handleFunction(argv)(input)
   }
 
   if (isObject(input)) {
-    return handleObject(input)
+    return handleObject(argv)(input)
   }
 
   throw TypeError('js-fire can only handle functions or objects')
 }
 
 const print = data => {
+  if (data == null) {
+    // Hide the response from stdout if it's undefined || null
+    return
+  }
   console.log(String(data).trim())
 }
 
-module.exports = input =>
-  fire(input)
+module.exports = input => {
+  const argv = minimist(process.argv.slice(2))
+
+  fire(argv)(input)
     .then(print)
     .catch(print)
+    .catch(print)
+}

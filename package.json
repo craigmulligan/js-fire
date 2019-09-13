@@ -11,14 +11,21 @@
     "test": "jest",
     "test:debug": "node --inspect node_modules/.bin/jest --runInBand"
   },
+  "bin": {
+    "js-fire": "bin/index.js"
+  },
   "devDependencies": {
     "jest": "^23.5.0"
+  },
+  "jest": {
+    "testEnvironment": "node"
   },
   "dependencies": {
     "cli-autocomplete": "^0.4.1",
     "lodash.isfunction": "^3.0.9",
     "lodash.isplainobject": "^4.0.6",
     "minimist": "^1.2.0",
+    "node-pty": "^0.8.1",
     "text-prompt": "^0.1.2"
   }
 }
