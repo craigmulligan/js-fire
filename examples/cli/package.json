@@ -1,0 +1,13 @@
+{
+  "name": "js-fire-example",
+  "version": "0.1.0",
+  "description": "a cli lib example to test bin aliases",
+  "main": "index.js",
+  "repository": "https://github.com/hobochild/js-fire",
+  "author": "hobochild",
+  "license": "MIT",
+  "private": false,
+  "bin": {
+    "js-fire-example": "./index.js"
+  }
+}

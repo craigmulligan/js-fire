@@ -2,24 +2,223 @@
 
 exports[`js-fire arrow function helpText 1`] = `
 "USAGE:
-	node arrow-function.js  --number=<number>
+	node arrow-function.js --number=<number>
 "
+`;
+
+exports[`js-fire bin helpText 1`] = `
+"USAGE:
+	js-fire --modulePath=<modulePath>"
+`;
+
+exports[`js-fire bin helpText with subcommand 1`] = `
+"USAGE:
+	js-fire fs
+
+COMMANDS:
+
+	appendFile <flags> --path=<path>  --data=<data>  --options=<options>  --callback=<callback> 
+	appendFileSync <flags> --path=<path>  --data=<data>  --options=<options> 
+	access <flags> --path=<path>  --mode=<mode>  --callback=<callback> 
+	accessSync <flags> --path=<path>  --mode=<mode> 
+	chown <flags> --path=<path>  --uid=<uid>  --gid=<gid>  --callback=<callback> 
+	chownSync <flags> --path=<path>  --uid=<uid>  --gid=<gid> 
+	chmod <flags> --path=<path>  --mode=<mode>  --callback=<callback> 
+	chmodSync <flags> --path=<path>  --mode=<mode> 
+	close <flags> --fd=<fd>  --callback=<callback> 
+	closeSync <flags> --fd=<fd> 
+	copyFile <flags> --src=<src>  --dest=<dest>  --flags=<flags>  --callback=<callback> 
+	copyFileSync <flags> --src=<src>  --dest=<dest>  --flags=<flags> 
+	createReadStream <flags> --path=<path>  --options=<options> 
+	createWriteStream <flags> --path=<path>  --options=<options> 
+	exists <flags> --path=<path>  --callback=<callback> 
+	existsSync <flags> --path=<path> 
+	fchown <flags> --fd=<fd>  --uid=<uid>  --gid=<gid>  --callback=<callback> 
+	fchownSync <flags> --fd=<fd>  --uid=<uid>  --gid=<gid> 
+	fchmod <flags> --fd=<fd>  --mode=<mode>  --callback=<callback> 
+	fchmodSync <flags> --fd=<fd>  --mode=<mode> 
+	fdatasync <flags> --fd=<fd>  --callback=<callback> 
+	fdatasyncSync <flags> --fd=<fd> 
+	fstat <flags> --fd=<fd>  --options=<options>  --callback=<callback> 
+	fstatSync <flags> --fd=<fd>  --options=undefined 
+	fsync <flags> --fd=<fd>  --callback=<callback> 
+	fsyncSync <flags> --fd=<fd> 
+	ftruncate <flags> --fd=<fd>  --len=0  --callback=<callback> 
+	ftruncateSync <flags> --fd=<fd>  --len=0 
+	futimes <flags> --fd=<fd>  --atime=<atime>  --mtime=<mtime>  --callback=<callback> 
+	futimesSync <flags> --fd=<fd>  --atime=<atime>  --mtime=<mtime> 
+	lchown <flags> --path=<path>  --uid=<uid>  --gid=<gid>  --callback=<callback> 
+	lchownSync <flags> --path=<path>  --uid=<uid>  --gid=<gid> 
+	link <flags> --existingPath=<existingPath>  --newPath=<newPath>  --callback=<callback> 
+	linkSync <flags> --existingPath=<existingPath>  --newPath=<newPath> 
+	lstat <flags> --path=<path>  --options=<options>  --callback=<callback> 
+	lstatSync <flags> --path=<path>  --options=undefined 
+	mkdir <flags> --path=<path>  --options=<options>  --callback=<callback> 
+	mkdirSync <flags> --path=<path>  --options=<options> 
+	mkdtemp <flags> --prefix=<prefix>  --options=<options>  --callback=<callback> 
+	mkdtempSync <flags> --prefix=<prefix>  --options=<options> 
+	open <flags> --path=<path>  --flags=<flags>  --mode=<mode>  --callback=<callback> 
+	openSync <flags> --path=<path>  --flags=<flags>  --mode=<mode> 
+	readdir <flags> --path=<path>  --options=<options>  --callback=<callback> 
+	readdirSync <flags> --path=<path>  --options=<options> 
+	read <flags> --fd=<fd>  --buffer=<buffer>  --offset=<offset>  --length=<length>  --position=<position>  --callback=<callback> 
+	readSync <flags> --fd=<fd>  --buffer=<buffer>  --offset=<offset>  --length=<length>  --position=<position> 
+	readFile <flags> --path=<path>  --options=<options>  --callback=<callback> 
+	readFileSync <flags> --path=<path>  --options=<options> 
+	readlink <flags> --path=<path>  --options=<options>  --callback=<callback> 
+	readlinkSync <flags> --path=<path>  --options=<options> 
+	realpath <flags> --p=<p>  --options=<options>  --callback=<callback> 
+	realpathSync <flags> --p=<p>  --options=<options> 
+	rename <flags> --oldPath=<oldPath>  --newPath=<newPath>  --callback=<callback> 
+	renameSync <flags> --oldPath=<oldPath>  --newPath=<newPath> 
+	rmdir <flags> --path=<path>  --callback=<callback> 
+	rmdirSync <flags> --path=<path> 
+	stat <flags> --path=<path>  --options=<options>  --callback=<callback> 
+	statSync <flags> --path=<path>  --options=undefined 
+	symlink <flags> --target=<target>  --path=<path>  --type_=<type_>  --callback_=<callback_> 
+	symlinkSync <flags> --target=<target>  --path=<path>  --type=<type> 
+	truncate <flags> --path=<path>  --len=<len>  --callback=<callback> 
+	truncateSync <flags> --path=<path>  --len=<len> 
+	unwatchFile <flags> --filename=<filename>  --listener=<listener> 
+	unlink <flags> --path=<path>  --callback=<callback> 
+	unlinkSync <flags> --path=<path> 
+	utimes <flags> --path=<path>  --atime=<atime>  --mtime=<mtime>  --callback=<callback> 
+	utimesSync <flags> --path=<path>  --atime=<atime>  --mtime=<mtime> 
+	watch <flags> --filename=<filename>  --options=<options>  --listener=<listener> 
+	watchFile <flags> --filename=<filename>  --options=<options>  --listener=<listener> 
+	writeFile <flags> --path=<path>  --data=<data>  --options=<options>  --callback=<callback> 
+	writeFileSync <flags> --path=<path>  --data=<data>  --options=<options> 
+	write <flags> --fd=<fd>  --buffer=<buffer>  --offset=<offset>  --length=<length>  --position=<position>  --callback=<callback> 
+	writeSync <flags> --fd=<fd>  --buffer=<buffer>  --offset=<offset>  --length=<length>  --position=<position> 
+	Dirent <flags> --name=<name>  --type=<type> 
+	Stats <flags> --atim_msec=<atim_msec> 
+	ReadStream <flags> --path=<path>  --options=<options> 
+	WriteStream <flags> --path=<path>  --options=<options> 
+	FileReadStream <flags> --path=<path>  --options=<options> 
+	FileWriteStream <flags> --path=<path>  --options=<options>"
+`;
+
+exports[`js-fire cli helpText 1`] = `
+"USAGE:
+	js-fire-example
+
+DESCRIPTION: 
+	I am a math machine
+
+
+COMMANDS:
+
+	half <flags> --number=<number> 
+	double <flags> --number=<number> 
+	add <flags> --n1=3.141592653589793  --n2=<n2> 
+
+	misc
+		year <flags>
+		brand <flags>
+		hello <flags> --name=<name>"
 `;
 
 exports[`js-fire function helpText 1`] = `
 "USAGE:
-	node function.js  --number=20
+	node function.js --number=20
 "
 `;
 
 exports[`js-fire helpText 1`] = `
 "USAGE:
-	node multi-args.js  --a=3.141592653589793  --b=20  --noop=false  --randomString=hiii"
+	node multi-args.js --a=3.141592653589793  --b=20  --noop=false  --randomString=hiii"
+`;
+
+exports[`js-fire lib helpText 1`] = `
+"USAGE:
+	node index.js fs
+
+COMMANDS:
+
+	appendFile <flags> --path=<path>  --data=<data>  --options=<options>  --callback=<callback> 
+	appendFileSync <flags> --path=<path>  --data=<data>  --options=<options> 
+	access <flags> --path=<path>  --mode=<mode>  --callback=<callback> 
+	accessSync <flags> --path=<path>  --mode=<mode> 
+	chown <flags> --path=<path>  --uid=<uid>  --gid=<gid>  --callback=<callback> 
+	chownSync <flags> --path=<path>  --uid=<uid>  --gid=<gid> 
+	chmod <flags> --path=<path>  --mode=<mode>  --callback=<callback> 
+	chmodSync <flags> --path=<path>  --mode=<mode> 
+	close <flags> --fd=<fd>  --callback=<callback> 
+	closeSync <flags> --fd=<fd> 
+	copyFile <flags> --src=<src>  --dest=<dest>  --flags=<flags>  --callback=<callback> 
+	copyFileSync <flags> --src=<src>  --dest=<dest>  --flags=<flags> 
+	createReadStream <flags> --path=<path>  --options=<options> 
+	createWriteStream <flags> --path=<path>  --options=<options> 
+	exists <flags> --path=<path>  --callback=<callback> 
+	existsSync <flags> --path=<path> 
+	fchown <flags> --fd=<fd>  --uid=<uid>  --gid=<gid>  --callback=<callback> 
+	fchownSync <flags> --fd=<fd>  --uid=<uid>  --gid=<gid> 
+	fchmod <flags> --fd=<fd>  --mode=<mode>  --callback=<callback> 
+	fchmodSync <flags> --fd=<fd>  --mode=<mode> 
+	fdatasync <flags> --fd=<fd>  --callback=<callback> 
+	fdatasyncSync <flags> --fd=<fd> 
+	fstat <flags> --fd=<fd>  --options=<options>  --callback=<callback> 
+	fstatSync <flags> --fd=<fd>  --options=undefined 
+	fsync <flags> --fd=<fd>  --callback=<callback> 
+	fsyncSync <flags> --fd=<fd> 
+	ftruncate <flags> --fd=<fd>  --len=0  --callback=<callback> 
+	ftruncateSync <flags> --fd=<fd>  --len=0 
+	futimes <flags> --fd=<fd>  --atime=<atime>  --mtime=<mtime>  --callback=<callback> 
+	futimesSync <flags> --fd=<fd>  --atime=<atime>  --mtime=<mtime> 
+	lchown <flags> --path=<path>  --uid=<uid>  --gid=<gid>  --callback=<callback> 
+	lchownSync <flags> --path=<path>  --uid=<uid>  --gid=<gid> 
+	link <flags> --existingPath=<existingPath>  --newPath=<newPath>  --callback=<callback> 
+	linkSync <flags> --existingPath=<existingPath>  --newPath=<newPath> 
+	lstat <flags> --path=<path>  --options=<options>  --callback=<callback> 
+	lstatSync <flags> --path=<path>  --options=undefined 
+	mkdir <flags> --path=<path>  --options=<options>  --callback=<callback> 
+	mkdirSync <flags> --path=<path>  --options=<options> 
+	mkdtemp <flags> --prefix=<prefix>  --options=<options>  --callback=<callback> 
+	mkdtempSync <flags> --prefix=<prefix>  --options=<options> 
+	open <flags> --path=<path>  --flags=<flags>  --mode=<mode>  --callback=<callback> 
+	openSync <flags> --path=<path>  --flags=<flags>  --mode=<mode> 
+	readdir <flags> --path=<path>  --options=<options>  --callback=<callback> 
+	readdirSync <flags> --path=<path>  --options=<options> 
+	read <flags> --fd=<fd>  --buffer=<buffer>  --offset=<offset>  --length=<length>  --position=<position>  --callback=<callback> 
+	readSync <flags> --fd=<fd>  --buffer=<buffer>  --offset=<offset>  --length=<length>  --position=<position> 
+	readFile <flags> --path=<path>  --options=<options>  --callback=<callback> 
+	readFileSync <flags> --path=<path>  --options=<options> 
+	readlink <flags> --path=<path>  --options=<options>  --callback=<callback> 
+	readlinkSync <flags> --path=<path>  --options=<options> 
+	realpath <flags> --p=<p>  --options=<options>  --callback=<callback> 
+	realpathSync <flags> --p=<p>  --options=<options> 
+	rename <flags> --oldPath=<oldPath>  --newPath=<newPath>  --callback=<callback> 
+	renameSync <flags> --oldPath=<oldPath>  --newPath=<newPath> 
+	rmdir <flags> --path=<path>  --callback=<callback> 
+	rmdirSync <flags> --path=<path> 
+	stat <flags> --path=<path>  --options=<options>  --callback=<callback> 
+	statSync <flags> --path=<path>  --options=undefined 
+	symlink <flags> --target=<target>  --path=<path>  --type_=<type_>  --callback_=<callback_> 
+	symlinkSync <flags> --target=<target>  --path=<path>  --type=<type> 
+	truncate <flags> --path=<path>  --len=<len>  --callback=<callback> 
+	truncateSync <flags> --path=<path>  --len=<len> 
+	unwatchFile <flags> --filename=<filename>  --listener=<listener> 
+	unlink <flags> --path=<path>  --callback=<callback> 
+	unlinkSync <flags> --path=<path> 
+	utimes <flags> --path=<path>  --atime=<atime>  --mtime=<mtime>  --callback=<callback> 
+	utimesSync <flags> --path=<path>  --atime=<atime>  --mtime=<mtime> 
+	watch <flags> --filename=<filename>  --options=<options>  --listener=<listener> 
+	watchFile <flags> --filename=<filename>  --options=<options>  --listener=<listener> 
+	writeFile <flags> --path=<path>  --data=<data>  --options=<options>  --callback=<callback> 
+	writeFileSync <flags> --path=<path>  --data=<data>  --options=<options> 
+	write <flags> --fd=<fd>  --buffer=<buffer>  --offset=<offset>  --length=<length>  --position=<position>  --callback=<callback> 
+	writeSync <flags> --fd=<fd>  --buffer=<buffer>  --offset=<offset>  --length=<length>  --position=<position> 
+	Dirent <flags> --name=<name>  --type=<type> 
+	Stats <flags> --atim_msec=<atim_msec> 
+	ReadStream <flags> --path=<path>  --options=<options> 
+	WriteStream <flags> --path=<path>  --options=<options> 
+	FileReadStream <flags> --path=<path>  --options=<options> 
+	FileWriteStream <flags> --path=<path>  --options=<options>"
 `;
 
 exports[`js-fire object helpText 1`] = `
 "USAGE:
-	node object.js 
+	node object.js
 
 DESCRIPTION: 
 	I am a math machine
