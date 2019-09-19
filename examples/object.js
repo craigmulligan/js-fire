@@ -17,6 +17,9 @@ const calculator = {
       // prints your name
       return `hi ${name}`
     },
+    info: {
+      greeting: (name = 'hobochild') => `greetings ${name}!`,
+    },
   },
 }
 

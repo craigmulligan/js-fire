@@ -1,9 +1,18 @@
 const minimist = require('minimist')
 const isObject = require('lodash.isplainobject')
 const isFunction = require('lodash.isfunction')
-const autocompletePrompt = require('cli-autocomplete')
-const textPrompt = require('text-prompt')
 const fs = require('fs')
+const chalk = require('chalk')
+const stringSimilarity = require('string-similarity')
+const fclone = require('fclone')
+const { AutoComplete, prompt } = require('enquirer')
+
+class CommandNotFoundError extends Error {
+  constructor(message) {
+    super(message)
+    this.name = 'CommandNotFound'
+  }
+}
 
 const functionExists = obj => {
   if (isFunction(obj)) {
@@ -31,11 +40,16 @@ const functionExists = obj => {
   return false
 }
 
+const last = arr => {
+  return arr[arr.length - 1]
+}
+
 const getProps = instance => {
   const keys = Object.keys(instance)
     .filter(k => k != '__description__')
     .filter(k => !k.startsWith('_'))
     .filter(k => functionExists(instance[k]))
+    .sort()
 
   return keys
 }
@@ -46,7 +60,12 @@ const introspect = fn => {
 
   if (typeof fn === 'function') {
     const argumentsRegExp = /\((.+)\)|^[^=>]+(?=\b\s=>)/
-    const res = argumentsRegExp.exec(fn.toString())
+    const firstLine = fn.toString().match(/^.*$/m)
+
+    if (firstLine.length < 0) {
+      return []
+    }
+    const res = argumentsRegExp.exec(firstLine)
 
     return res
       ? res[0]
@@ -56,11 +75,16 @@ const introspect = fn => {
           .replace(/async /gm, '')
           .split(',')
           .map(s => {
-            if (s.includes('=')) {
-              const param = s.split('=')
-              return [param[0].trim(), eval(param[1])]
+            try {
+              if (s.includes('=')) {
+                const param = s.split('=')
+                return [param[0].trim(), eval(param[1])]
+              }
+              return s.trim()
+            } catch (err) {
+              throw err
+              return []
             }
-            return s.trim()
           })
       : []
   } else {
@@ -94,12 +118,11 @@ const scrapeComments = input => {
 }
 
 const isTargetCmd = (argv, key) => {
-  return key === argv._[argv._.length - 1]
+  return key === last(argv._)
 }
 
 const isInteractive = argv => (argv['interactive'] || argv['i'] ? true : false)
 const isHelp = argv => (argv['help'] || argv['h'] ? true : false)
-const hasNoCmd = argv => argv._.length == 0
 
 const usageText = () => {
   const cwd = process.cwd()
@@ -183,48 +206,46 @@ const getSubCommands = input => {
   return getProps(input).reduce((acc, key) => {
     let description = scrapeComments(input[key]) || ''
     acc.push({
-      title: key + '\t' + description,
-      value: {
-        key,
-        instance: input[key],
-      },
+      key,
+      instance: input[key],
     })
     return acc
   }, [])
 }
 
-const getFlagsInput = (acc, flags, i) => {
-  const flag = flags[i]
+const getFlagsInput = async flags => {
+  if (flags.length == 0) {
+    return []
+  }
 
-  return new Promise((resolve, reject) => {
-    const opts = {}
-    let message = `--${flag}`
-
+  const flagsInput = flags.map(flag => {
     if (Array.isArray(flag)) {
-      message = `--${flag[0]}`
-      opts['value'] = `${flag[1]}`
+      return {
+        name: `--${flag[0]}`,
+        type: 'input',
+        initial: `${flag[1]}`,
+      }
     }
 
-    textPrompt(message, opts)
-      .on('submit', v => {
-        acc.push(v)
-        if (i === flags.length - 1) {
-          resolve(acc)
-        } else {
-          resolve(getFlagsInput(acc, flags, i + 1))
-        }
-      })
-      .on('abort', v => reject(v))
+    return {
+      name: `--${flag}`,
+      type: 'input',
+    }
+  })
+
+  const res = await prompt(flagsInput)
+  return flags.map(f => {
+    if (Array.isArray(f)) {
+      return res[`--${f[0]}`]
+    }
+    return res[`--${f}`]
   })
 }
 
 const handleFunction = argv => async (fn, name, offset = 0) => {
   if (isInteractive(argv) && isTargetCmd(argv, name)) {
     const args = introspect(fn)
-    let values = []
-    if (args.length > 0) {
-      values = await getFlagsInput([], args, 0)
-    }
+    const values = await getFlagsInput(args)
     const result = await fn(...values)
     return result
   }
@@ -249,21 +270,35 @@ const handleFunction = argv => async (fn, name, offset = 0) => {
   return parseFn(argv)(fn, offset)
 }
 
-const getSuggestion = subcommands => {
-  const suggestsubCommands = input =>
-    Promise.resolve(
-      subcommands.filter(cmd => cmd.title.slice(0, input.length) === input),
-    )
-
-  return new Promise((resolve, reject) => {
-    autocompletePrompt(
-      'Tab and enter to select a command',
-      suggestsubCommands,
-      { limit: -1 },
-    )
-      .on('abort', reject)
-      .on('submit', resolve)
+const getSuggestion = async subcommands => {
+  const prompt = new AutoComplete({
+    name: 'Subcommand',
+    message: 'Select a command',
+    limit: 100,
+    choices: subcommands.map(cmd => cmd.key),
   })
+
+  const answer = await prompt.run()
+
+  return subcommands.find(cmd => cmd.key == answer)
+}
+
+const cmdNotFound = (argv, props) => {
+  if (argv._.length === 0) {
+    return chalk.red(`Error: Command not found\n\n`)
+  }
+
+  const match = stringSimilarity.findBestMatch(last(argv._), props).bestMatch
+
+  return (
+    chalk.red(
+      `Error: Command ${chalk.red.underline(last(argv._))} not found\n`,
+    ) +
+    (match.rating > 0.6
+      ? chalk.yellow(`Did you mean: ${chalk.yellow.underline(match.target)} ?`)
+      : '') +
+    '\n\n'
+  )
 }
 
 const handleObject = argv => async input => {
@@ -282,39 +317,40 @@ const handleObject = argv => async input => {
     return handleFunction(argv)(method, keys[keys.length - 1], keys.length)
   }
 
-  if (isObject(method)) {
-    if (isInteractive(argv)) {
-      const subcommands = getSubCommands(method)
-      const cmd = await getSuggestion(subcommands)
-      // adjust the argv with interactive
-      argv._.push(cmd.key)
+  if (isInteractive(argv)) {
+    const subcommands = getSubCommands(method)
+    const cmd = await getSuggestion(subcommands)
+    // adjust the argv with interactive
+    argv._.push(cmd.key)
 
-      if (isFunction(cmd.instance)) {
-        return handleFunction(argv)(
-          cmd.instance,
-          cmd.instance.name,
-          keys.length,
-        )
-      }
-
-      return fire(argv)(cmd.instance)
+    if (isFunction(cmd.instance)) {
+      return handleFunction(argv)(cmd.instance, cmd.instance.name, keys.length)
     }
 
-    if (isHelp(argv) || hasNoCmd(argv)) {
-      const description = scrapeComments(method)
-      const cmdHelpText = subcommandHelp(method, 0)
-      return (
-        usageText() +
-        (description ? '\n\nDESCRIPTION: ' + '\n\t' + description + '\n' : '') +
-        '\n\nCOMMANDS:\n\n' +
-        cmdHelpText
-      )
-    }
-
-    return handleObject(method)
+    return fire(argv)(cmd.instance)
   }
 
-  return parseFn(argv)(method, keys.length)
+  const description = scrapeComments(method)
+  const cmdHelpText = subcommandHelp(method, 0)
+
+  if (isHelp(argv)) {
+    return (
+      cmdNotFound(argv, getProps(method)) +
+      usageText() +
+      (description ? '\n\nDESCRIPTION: ' + '\n\t' + description + '\n' : '') +
+      '\n\nCOMMANDS:\n\n' +
+      cmdHelpText
+    )
+  }
+
+  // this means that the caller tried to call an object
+  throw new CommandNotFoundError(
+    cmdNotFound(argv, getProps(method)) +
+      usageText() +
+      (description ? '\n\nDESCRIPTION: ' + '\n\t' + description + '\n' : '') +
+      '\n\nCOMMANDS:\n\n' +
+      cmdHelpText,
+  )
 }
 
 const fire = argv => input => {
@@ -323,7 +359,9 @@ const fire = argv => input => {
   }
 
   if (isObject(input)) {
-    return handleObject(argv)(input)
+    const cleansed = fclone(input)
+
+    return handleObject(argv)(cleansed)
   }
 
   throw TypeError('js-fire can only handle functions or objects')
@@ -342,6 +380,13 @@ module.exports = input => {
 
   fire(argv)(input)
     .then(print)
-    .catch(print)
-    .catch(print)
+    .catch(err => {
+      if (err instanceof CommandNotFoundError) {
+        console.log(err.message)
+        process.exit(1)
+        return
+      }
+      process.exit(1)
+      console.log(err)
+    })
 }
