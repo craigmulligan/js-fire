@@ -1,6 +1,6 @@
 {
   "name": "js-fire",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "github.com/google/python-fire clone for node.js",
   "main": "index.js",
   "repository": "https://github.com/hobochild/js-fire",
