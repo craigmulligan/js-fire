@@ -20,7 +20,9 @@ yarn add js-fire
 npm install js-fire
 ```
 
-## Basic API Usage
+js-fire is exposed as both an [API](#api-usage) and a [CLI](#cli-usage).
+
+## API Usage
 
 You can call `Fire` on any functions and objects:<br>
 
@@ -63,7 +65,7 @@ Automactic `--help` command.
 node calculator.js --help
 
 USAGE:
-	node object.js
+	node calculator.js
 
 COMMANDS:
 
@@ -83,11 +85,11 @@ Automatic `--interactive` mode:
 
 For additional examples, see [/examples](/examples).
 
-## Basic CLI Usage
+## CLI Usage
 
 js-fire exposes a CLI that takes modulePath and passes it to `js-fire`.
 
-```
+```bash
 USAGE:
 	js-fire  --modulePath=<modulePath>
 ```
@@ -96,13 +98,13 @@ USAGE:
 
 So you can js-fire on _most_ js modules.
 
-```
+```bash
 js-fire fs writeFileSync --path=hello.txt --data="hiii"
 ```
 
 You can also use `interactive` and `help` mode to explore a modules api:
 
-```
+```bash
 js-fire fs -h
 
 USAGE:
