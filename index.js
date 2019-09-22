@@ -14,6 +14,20 @@ class CommandNotFoundError extends Error {
   }
 }
 
+class FlagNotFoundError extends Error {
+  constructor(message) {
+    super(message)
+    this.name = 'FlagNotFound'
+  }
+}
+
+class NotFunctionError extends Error {
+  constructor(message) {
+    super(message)
+    this.name = 'NotFunctionError'
+  }
+}
+
 const functionExists = obj => {
   if (isFunction(obj)) {
     return true
@@ -88,7 +102,7 @@ const introspect = fn => {
           })
       : []
   } else {
-    throw new TypeError('NOT_A_FUNCTION')
+    throw new NotFunctionError()
   }
 }
 
@@ -157,8 +171,41 @@ const flagsText = args => {
   return ''
 }
 
-const parseFn = argv => async (fn, offset = 0) => {
+const checkArgs = (argv, fn) => {
   const args = introspect(fn)
+
+  const argNames = args.map(a => {
+    if (Array.isArray(a)) {
+      return a[0]
+    }
+    return a
+  })
+
+  Object.keys(argv)
+    .filter(arg => !['help', 'interactive', '_', '--', 'h', 'i'].includes(arg))
+    .map(flag => {
+      if (!argNames.includes(flag)) {
+        const match = stringSimilarity.findBestMatch(flag, argNames).bestMatch
+
+        throw new FlagNotFoundError(
+          chalk.red(`Error: Flag ${chalk.red.underline(flag)} not found\n`) +
+            (match.rating > 0.4
+              ? chalk.yellow(
+                  `Did you mean: ${chalk.yellow.underline(match.target)} ?`,
+                )
+              : '') +
+            '\n' +
+            functionHelpText(fn),
+        )
+      }
+    })
+
+  return args
+}
+
+const parseFn = argv => async (fn, offset = 0) => {
+  const args = checkArgs(argv, fn)
+
   const values = args.map((name, i) => {
     if (Array.isArray(name)) {
       if (argv[name[0]]) {
@@ -173,10 +220,10 @@ const parseFn = argv => async (fn, offset = 0) => {
     return argv['_'][offset + i]
   })
 
-  return Promise.resolve(fn(...values))
+  return fn(...values)
 }
 
-const functionHelp = (fn, name, depth = 1) => {
+const functionInlineHelp = (fn, name, depth = 1) => {
   const args = introspect(fn)
   return (
     '\t'.repeat(depth) +
@@ -195,7 +242,7 @@ const subcommandHelp = (input, depth = 1) => {
     }
 
     if (isFunction(input[key])) {
-      acc = acc + '\t'.repeat(depth) + functionHelp(input[key], key)
+      acc = acc + '\t'.repeat(depth) + functionInlineHelp(input[key], key)
     }
 
     return acc
@@ -242,6 +289,15 @@ const getFlagsInput = async flags => {
   })
 }
 
+const functionHelpText = fn => {
+  const description = scrapeComments(fn)
+  return (
+    usageText() +
+    flagsText(introspect(fn)) +
+    (description ? '\n\nDESCRIPTION: ' + '\n' + description + '\n' : '')
+  )
+}
+
 const handleFunction = argv => async (fn, name, offset = 0) => {
   if (isInteractive(argv) && isTargetCmd(argv, name)) {
     const args = introspect(fn)
@@ -251,12 +307,7 @@ const handleFunction = argv => async (fn, name, offset = 0) => {
   }
 
   if (isHelp(argv) && isTargetCmd(argv, name)) {
-    const description = scrapeComments(fn)
-    return (
-      usageText() +
-      flagsText(introspect(fn)) +
-      (description ? '\n\nDESCRIPTION: ' + '\n' + description + '\n' : '')
-    )
+    return functionHelpText(fn)
   }
 
   // if there is a name
@@ -294,7 +345,7 @@ const cmdNotFound = (argv, props) => {
     chalk.red(
       `Error: Command ${chalk.red.underline(last(argv._))} not found\n`,
     ) +
-    (match.rating > 0.6
+    (match.rating > 0.4
       ? chalk.yellow(`Did you mean: ${chalk.yellow.underline(match.target)} ?`)
       : '') +
     '\n\n'
@@ -375,9 +426,15 @@ const print = data => {
   console.log(String(data).trim())
 }
 
-module.exports = input => {
-  const argv = minimist(process.argv.slice(2))
-
+module.exports = (
+  input,
+  argv = minimist(process.argv.slice(2), {
+    alias: {
+      h: 'help',
+      i: 'interactive',
+    },
+  }),
+) => {
   fire(argv)(input)
     .then(print)
     .catch(err => {
@@ -386,7 +443,14 @@ module.exports = input => {
         process.exit(1)
         return
       }
-      process.exit(1)
+
+      if (err instanceof FlagNotFoundError) {
+        console.log(err.message)
+        process.exit(1)
+        return
+      }
+
       console.log(err)
+      process.exit(1)
     })
 }

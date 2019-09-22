@@ -303,6 +303,13 @@ COMMANDS:
 		year <flags>"
 `;
 
+exports[`js-fire function flag typo 1`] = `
+"Error: Flag numer not found
+Did you mean: number ?
+USAGE:
+	node function.js --number=20"
+`;
+
 exports[`js-fire function helpText 1`] = `
 "USAGE:
 	node function.js --number=20
