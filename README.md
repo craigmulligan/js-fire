@@ -99,13 +99,13 @@ USAGE:
 So you can js-fire on _most_ js modules.
 
 ```bash
-js-fire fs writeFileSync --path=hello.txt --data="hiii"
+js-fire fs -- writeFileSync --path=hello.txt --data="hiii"
 ```
 
 You can also use `interactive` and `help` mode to explore a modules api:
 
 ```bash
-js-fire fs -h
+js-fire fs -- -h
 
 USAGE:
 	js-fire

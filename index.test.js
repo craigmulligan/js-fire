@@ -14,6 +14,14 @@ describe('js-fire', () => {
       const { stdout } = await exec('node examples/function.js --help')
       expect(stdout).toMatchSnapshot()
     })
+
+    test('flag typo', async () => {
+      try {
+        await exec('node examples/function.js --numer=2')
+      } catch (err) {
+        expect(err.stdout.trim()).toMatchSnapshot()
+      }
+    })
   })
 
   describe('arrow function', () => {
@@ -42,7 +50,7 @@ describe('js-fire', () => {
     test('write a file with fs', async () => {
       const path = __dirname + '/test.txt'
       await exec(
-        `node bin/index.js fs writeFileSync --path ${path} --data "hiii"`,
+        `node bin/index.js fs -- writeFileSync --path ${path} --data "hiii"`,
       )
       const constents = fs.readFileSync(path)
       expect(constents.toString()).toEqual('hiii')
@@ -147,7 +155,7 @@ describe('js-fire', () => {
 
     test('bin with named args', async () => {
       const { stdout } = await exec(
-        `js-fire fs existsSync --path ${__filename}`,
+        `js-fire fs -- existsSync --path ${__filename}`,
       )
       expect(stdout.trim()).toEqual('true')
     })
