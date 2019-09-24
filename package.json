@@ -25,6 +25,7 @@
     "fclone": "^1.0.11",
     "lodash.isfunction": "^3.0.9",
     "lodash.isplainobject": "^4.0.6",
+    "lodash.memoize": "^4.1.2",
     "minimist": "^1.2.0",
     "string-similarity": "^3.0.0"
   }
