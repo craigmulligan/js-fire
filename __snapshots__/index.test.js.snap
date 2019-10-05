@@ -456,7 +456,7 @@ COMMANDS:
 		brand <flags>
 		hello <flags> --name=<name> 
 
-	info
+		info
 			greeting <flags> --name=hobochild 
 		year <flags>
 "
