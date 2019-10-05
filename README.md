@@ -32,6 +32,7 @@ Here's an example of calling Fire on a object, you can infinitely nest objects t
 const fire = require('js-fire')
 
 const calculator = {
+  __description__: 'I am a math machine',
   double: number => {
     // I double things
     return 2 * number
@@ -66,6 +67,9 @@ node calculator.js --help
 
 USAGE:
 	node calculator.js
+
+DESCRIPTION:
+	I am a math machine
 
 COMMANDS:
 
