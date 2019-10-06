@@ -1,6 +1,6 @@
 {
   "name": "js-fire",
-  "version": "0.7.1",
+  "version": "0.7.2",
   "description": "github.com/google/python-fire clone for node.js",
   "main": "index.js",
   "repository": "https://github.com/hobochild/js-fire",
@@ -27,6 +27,7 @@
     "lodash.isplainobject": "^4.0.6",
     "lodash.memoize": "^4.1.2",
     "minimist": "^1.2.0",
+    "omelette": "^0.4.12",
     "string-similarity": "^3.0.0"
   }
 }
