@@ -1,4 +1,4 @@
-# js-fire [![CircleCI](https://circleci.com/gh/hobochild/js-fire.svg?style=svg)](https://circleci.com/gh/hobochild/js-fire)
+# js-fire [![Node.js CI](https://github.com/hobochild/js-fire/actions/workflows/node.js.yml/badge.svg)](https://github.com/hobochild/js-fire/actions/workflows/node.js.yml)
 
 > A javascript implementation of [google/python-fire](https://github.com/google/python-fire)
 
