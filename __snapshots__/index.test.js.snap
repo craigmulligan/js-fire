@@ -20,6 +20,7 @@ USAGE:
 
 COMMANDS:
 
+	Dir
 	Dirent
 	FileReadStream --path=<path>  --options=<options> 
 	FileWriteStream --path=<path>  --options=<options> 
@@ -48,8 +49,8 @@ COMMANDS:
 	fchownSync --fd=<fd>  --uid=<uid>  --gid=<gid> 
 	fdatasync --fd=<fd>  --callback=<callback> 
 	fdatasyncSync --fd=<fd> 
-	fstat --fd=<fd>  --options=<options>  --callback=<callback> 
-	fstatSync --fd=<fd>  --options=undefined 
+	fstat --fd=<fd>  --options=false  --callback=<callback> 
+	fstatSync --fd=<fd>  --options=false 
 	fsync --fd=<fd>  --callback=<callback> 
 	fsyncSync --fd=<fd> 
 	ftruncate --fd=<fd>  --len=0  --callback=<callback> 
@@ -60,14 +61,47 @@ COMMANDS:
 	lchownSync --path=<path>  --uid=<uid>  --gid=<gid> 
 	link --existingPath=<existingPath>  --newPath=<newPath>  --callback=<callback> 
 	linkSync --existingPath=<existingPath>  --newPath=<newPath> 
-	lstat --path=<path>  --options=<options>  --callback=<callback> 
-	lstatSync --path=<path>  --options=undefined 
+	lstat --path=<path>  --options=false  --callback=<callback> 
+	lstatSync --path=<path>  --options=false 
+	lutimes --path=<path>  --atime=<atime>  --mtime=<mtime>  --callback=<callback> 
+	lutimesSync --path=<path>  --atime=<atime>  --mtime=<mtime> 
 	mkdir --path=<path>  --options=<options>  --callback=<callback> 
 	mkdirSync --path=<path>  --options=<options> 
 	mkdtemp --prefix=<prefix>  --options=<options>  --callback=<callback> 
 	mkdtempSync --prefix=<prefix>  --options=<options> 
 	open --path=<path>  --flags=<flags>  --mode=<mode>  --callback=<callback> 
 	openSync --path=<path>  --flags=<flags>  --mode=<mode> 
+	opendir --path=<path>  --options=<options>  --callback=<callback> 
+	opendirSync --path=<path>  --options=<options> 
+
+	promises
+		access --path=<path>  --mode=js-fire-unknown-value 
+		appendFile --path=<path>  --data=<data>  --options=<options> 
+		chmod --path=<path>  --mode=<mode> 
+		chown --path=<path>  --uid=<uid>  --gid=<gid> 
+		copyFile --src=<src>  --dest=<dest>  --flags=<flags> 
+		lchmod --path=<path>  --mode=<mode> 
+		lchown --path=<path>  --uid=<uid>  --gid=<gid> 
+		link --existingPath=<existingPath>  --newPath=<newPath> 
+		lstat --path=<path>  --options=false 
+		lutimes --path=<path>  --atime=<atime>  --mtime=<mtime> 
+		mkdir --path=<path>  --options=<options> 
+		mkdtemp --prefix=<prefix>  --options=<options> 
+		open --path=<path>  --flags=<flags>  --mode=<mode> 
+		opendir --...args=<...args> 
+		readFile --path=<path>  --options=<options> 
+		readdir --path=<path>  --options=<options> 
+		readlink --path=<path>  --options=<options> 
+		realpath --path=<path>  --options=<options> 
+		rename --oldPath=<oldPath>  --newPath=<newPath> 
+		rmdir --path=<path>  --options=<options> 
+		stat --path=<path>  --options=false 
+		symlink --target=<target>  --path=<path>  --type_=<type_> 
+		truncate --path=<path>  --len=0 
+		unlink --path=<path> 
+		utimes --path=<path>  --atime=<atime>  --mtime=<mtime> 
+		writeFile --path=<path>  --data=<data>  --options=<options> 
+
 	read --fd=<fd>  --buffer=<buffer>  --offset=<offset>  --length=<length>  --position=<position>  --callback=<callback> 
 	readFile --path=<path>  --options=<options>  --callback=<callback> 
 	readFileSync --path=<path>  --options=<options> 
@@ -76,14 +110,16 @@ COMMANDS:
 	readdirSync --path=<path>  --options=<options> 
 	readlink --path=<path>  --options=<options>  --callback=<callback> 
 	readlinkSync --path=<path>  --options=<options> 
+	readv --fd=<fd>  --buffers=<buffers>  --position=<position>  --callback=<callback> 
+	readvSync --fd=<fd>  --buffers=<buffers>  --position=<position> 
 	realpath --p=<p>  --options=<options>  --callback=<callback> 
 	realpathSync --p=<p>  --options=<options> 
 	rename --oldPath=<oldPath>  --newPath=<newPath>  --callback=<callback> 
 	renameSync --oldPath=<oldPath>  --newPath=<newPath> 
-	rmdir --path=<path>  --callback=<callback> 
-	rmdirSync --path=<path> 
-	stat --path=<path>  --options=<options>  --callback=<callback> 
-	statSync --path=<path>  --options=undefined 
+	rmdir --path=<path>  --options=<options>  --callback=<callback> 
+	rmdirSync --path=<path>  --options=<options> 
+	stat --path=<path>  --options=false  --callback=<callback> 
+	statSync --path=<path>  --options=false 
 	symlink --target=<target>  --path=<path>  --type_=<type_>  --callback_=<callback_> 
 	symlinkSync --target=<target>  --path=<path>  --type=<type> 
 	truncate --path=<path>  --len=<len>  --callback=<callback> 
@@ -98,7 +134,9 @@ COMMANDS:
 	write --fd=<fd>  --buffer=<buffer>  --offset=<offset>  --length=<length>  --position=<position>  --callback=<callback> 
 	writeFile --path=<path>  --data=<data>  --options=<options>  --callback=<callback> 
 	writeFileSync --path=<path>  --data=<data>  --options=<options> 
-	writeSync --fd=<fd>  --buffer=<buffer>  --offset=<offset>  --length=<length>  --position=<position>"
+	writeSync --fd=<fd>  --buffer=<buffer>  --offset=<offset>  --length=<length>  --position=<position> 
+	writev --fd=<fd>  --buffers=<buffers>  --position=<position>  --callback=<callback> 
+	writevSync --fd=<fd>  --buffers=<buffers>  --position=<position>"
 `;
 
 exports[`js-fire bin helpText with subcommand with help flag 1`] = `
@@ -110,6 +148,7 @@ USAGE:
 
 COMMANDS:
 
+	Dir
 	Dirent
 	FileReadStream --path=<path>  --options=<options> 
 	FileWriteStream --path=<path>  --options=<options> 
@@ -138,8 +177,8 @@ COMMANDS:
 	fchownSync --fd=<fd>  --uid=<uid>  --gid=<gid> 
 	fdatasync --fd=<fd>  --callback=<callback> 
 	fdatasyncSync --fd=<fd> 
-	fstat --fd=<fd>  --options=<options>  --callback=<callback> 
-	fstatSync --fd=<fd>  --options=undefined 
+	fstat --fd=<fd>  --options=false  --callback=<callback> 
+	fstatSync --fd=<fd>  --options=false 
 	fsync --fd=<fd>  --callback=<callback> 
 	fsyncSync --fd=<fd> 
 	ftruncate --fd=<fd>  --len=0  --callback=<callback> 
@@ -150,14 +189,47 @@ COMMANDS:
 	lchownSync --path=<path>  --uid=<uid>  --gid=<gid> 
 	link --existingPath=<existingPath>  --newPath=<newPath>  --callback=<callback> 
 	linkSync --existingPath=<existingPath>  --newPath=<newPath> 
-	lstat --path=<path>  --options=<options>  --callback=<callback> 
-	lstatSync --path=<path>  --options=undefined 
+	lstat --path=<path>  --options=false  --callback=<callback> 
+	lstatSync --path=<path>  --options=false 
+	lutimes --path=<path>  --atime=<atime>  --mtime=<mtime>  --callback=<callback> 
+	lutimesSync --path=<path>  --atime=<atime>  --mtime=<mtime> 
 	mkdir --path=<path>  --options=<options>  --callback=<callback> 
 	mkdirSync --path=<path>  --options=<options> 
 	mkdtemp --prefix=<prefix>  --options=<options>  --callback=<callback> 
 	mkdtempSync --prefix=<prefix>  --options=<options> 
 	open --path=<path>  --flags=<flags>  --mode=<mode>  --callback=<callback> 
 	openSync --path=<path>  --flags=<flags>  --mode=<mode> 
+	opendir --path=<path>  --options=<options>  --callback=<callback> 
+	opendirSync --path=<path>  --options=<options> 
+
+	promises
+		access --path=<path>  --mode=js-fire-unknown-value 
+		appendFile --path=<path>  --data=<data>  --options=<options> 
+		chmod --path=<path>  --mode=<mode> 
+		chown --path=<path>  --uid=<uid>  --gid=<gid> 
+		copyFile --src=<src>  --dest=<dest>  --flags=<flags> 
+		lchmod --path=<path>  --mode=<mode> 
+		lchown --path=<path>  --uid=<uid>  --gid=<gid> 
+		link --existingPath=<existingPath>  --newPath=<newPath> 
+		lstat --path=<path>  --options=false 
+		lutimes --path=<path>  --atime=<atime>  --mtime=<mtime> 
+		mkdir --path=<path>  --options=<options> 
+		mkdtemp --prefix=<prefix>  --options=<options> 
+		open --path=<path>  --flags=<flags>  --mode=<mode> 
+		opendir --...args=<...args> 
+		readFile --path=<path>  --options=<options> 
+		readdir --path=<path>  --options=<options> 
+		readlink --path=<path>  --options=<options> 
+		realpath --path=<path>  --options=<options> 
+		rename --oldPath=<oldPath>  --newPath=<newPath> 
+		rmdir --path=<path>  --options=<options> 
+		stat --path=<path>  --options=false 
+		symlink --target=<target>  --path=<path>  --type_=<type_> 
+		truncate --path=<path>  --len=0 
+		unlink --path=<path> 
+		utimes --path=<path>  --atime=<atime>  --mtime=<mtime> 
+		writeFile --path=<path>  --data=<data>  --options=<options> 
+
 	read --fd=<fd>  --buffer=<buffer>  --offset=<offset>  --length=<length>  --position=<position>  --callback=<callback> 
 	readFile --path=<path>  --options=<options>  --callback=<callback> 
 	readFileSync --path=<path>  --options=<options> 
@@ -166,14 +238,16 @@ COMMANDS:
 	readdirSync --path=<path>  --options=<options> 
 	readlink --path=<path>  --options=<options>  --callback=<callback> 
 	readlinkSync --path=<path>  --options=<options> 
+	readv --fd=<fd>  --buffers=<buffers>  --position=<position>  --callback=<callback> 
+	readvSync --fd=<fd>  --buffers=<buffers>  --position=<position> 
 	realpath --p=<p>  --options=<options>  --callback=<callback> 
 	realpathSync --p=<p>  --options=<options> 
 	rename --oldPath=<oldPath>  --newPath=<newPath>  --callback=<callback> 
 	renameSync --oldPath=<oldPath>  --newPath=<newPath> 
-	rmdir --path=<path>  --callback=<callback> 
-	rmdirSync --path=<path> 
-	stat --path=<path>  --options=<options>  --callback=<callback> 
-	statSync --path=<path>  --options=undefined 
+	rmdir --path=<path>  --options=<options>  --callback=<callback> 
+	rmdirSync --path=<path>  --options=<options> 
+	stat --path=<path>  --options=false  --callback=<callback> 
+	statSync --path=<path>  --options=false 
 	symlink --target=<target>  --path=<path>  --type_=<type_>  --callback_=<callback_> 
 	symlinkSync --target=<target>  --path=<path>  --type=<type> 
 	truncate --path=<path>  --len=<len>  --callback=<callback> 
@@ -188,7 +262,9 @@ COMMANDS:
 	write --fd=<fd>  --buffer=<buffer>  --offset=<offset>  --length=<length>  --position=<position>  --callback=<callback> 
 	writeFile --path=<path>  --data=<data>  --options=<options>  --callback=<callback> 
 	writeFileSync --path=<path>  --data=<data>  --options=<options> 
-	writeSync --fd=<fd>  --buffer=<buffer>  --offset=<offset>  --length=<length>  --position=<position>"
+	writeSync --fd=<fd>  --buffer=<buffer>  --offset=<offset>  --length=<length>  --position=<position> 
+	writev --fd=<fd>  --buffers=<buffers>  --position=<position>  --callback=<callback> 
+	writevSync --fd=<fd>  --buffers=<buffers>  --position=<position>"
 `;
 
 exports[`js-fire bin helpText with subcommand without help flag 1`] = `
@@ -200,6 +276,7 @@ USAGE:
 
 COMMANDS:
 
+	Dir
 	Dirent
 	FileReadStream --path=<path>  --options=<options> 
 	FileWriteStream --path=<path>  --options=<options> 
@@ -228,8 +305,8 @@ COMMANDS:
 	fchownSync --fd=<fd>  --uid=<uid>  --gid=<gid> 
 	fdatasync --fd=<fd>  --callback=<callback> 
 	fdatasyncSync --fd=<fd> 
-	fstat --fd=<fd>  --options=<options>  --callback=<callback> 
-	fstatSync --fd=<fd>  --options=undefined 
+	fstat --fd=<fd>  --options=false  --callback=<callback> 
+	fstatSync --fd=<fd>  --options=false 
 	fsync --fd=<fd>  --callback=<callback> 
 	fsyncSync --fd=<fd> 
 	ftruncate --fd=<fd>  --len=0  --callback=<callback> 
@@ -240,14 +317,47 @@ COMMANDS:
 	lchownSync --path=<path>  --uid=<uid>  --gid=<gid> 
 	link --existingPath=<existingPath>  --newPath=<newPath>  --callback=<callback> 
 	linkSync --existingPath=<existingPath>  --newPath=<newPath> 
-	lstat --path=<path>  --options=<options>  --callback=<callback> 
-	lstatSync --path=<path>  --options=undefined 
+	lstat --path=<path>  --options=false  --callback=<callback> 
+	lstatSync --path=<path>  --options=false 
+	lutimes --path=<path>  --atime=<atime>  --mtime=<mtime>  --callback=<callback> 
+	lutimesSync --path=<path>  --atime=<atime>  --mtime=<mtime> 
 	mkdir --path=<path>  --options=<options>  --callback=<callback> 
 	mkdirSync --path=<path>  --options=<options> 
 	mkdtemp --prefix=<prefix>  --options=<options>  --callback=<callback> 
 	mkdtempSync --prefix=<prefix>  --options=<options> 
 	open --path=<path>  --flags=<flags>  --mode=<mode>  --callback=<callback> 
 	openSync --path=<path>  --flags=<flags>  --mode=<mode> 
+	opendir --path=<path>  --options=<options>  --callback=<callback> 
+	opendirSync --path=<path>  --options=<options> 
+
+	promises
+		access --path=<path>  --mode=js-fire-unknown-value 
+		appendFile --path=<path>  --data=<data>  --options=<options> 
+		chmod --path=<path>  --mode=<mode> 
+		chown --path=<path>  --uid=<uid>  --gid=<gid> 
+		copyFile --src=<src>  --dest=<dest>  --flags=<flags> 
+		lchmod --path=<path>  --mode=<mode> 
+		lchown --path=<path>  --uid=<uid>  --gid=<gid> 
+		link --existingPath=<existingPath>  --newPath=<newPath> 
+		lstat --path=<path>  --options=false 
+		lutimes --path=<path>  --atime=<atime>  --mtime=<mtime> 
+		mkdir --path=<path>  --options=<options> 
+		mkdtemp --prefix=<prefix>  --options=<options> 
+		open --path=<path>  --flags=<flags>  --mode=<mode> 
+		opendir --...args=<...args> 
+		readFile --path=<path>  --options=<options> 
+		readdir --path=<path>  --options=<options> 
+		readlink --path=<path>  --options=<options> 
+		realpath --path=<path>  --options=<options> 
+		rename --oldPath=<oldPath>  --newPath=<newPath> 
+		rmdir --path=<path>  --options=<options> 
+		stat --path=<path>  --options=false 
+		symlink --target=<target>  --path=<path>  --type_=<type_> 
+		truncate --path=<path>  --len=0 
+		unlink --path=<path> 
+		utimes --path=<path>  --atime=<atime>  --mtime=<mtime> 
+		writeFile --path=<path>  --data=<data>  --options=<options> 
+
 	read --fd=<fd>  --buffer=<buffer>  --offset=<offset>  --length=<length>  --position=<position>  --callback=<callback> 
 	readFile --path=<path>  --options=<options>  --callback=<callback> 
 	readFileSync --path=<path>  --options=<options> 
@@ -256,14 +366,16 @@ COMMANDS:
 	readdirSync --path=<path>  --options=<options> 
 	readlink --path=<path>  --options=<options>  --callback=<callback> 
 	readlinkSync --path=<path>  --options=<options> 
+	readv --fd=<fd>  --buffers=<buffers>  --position=<position>  --callback=<callback> 
+	readvSync --fd=<fd>  --buffers=<buffers>  --position=<position> 
 	realpath --p=<p>  --options=<options>  --callback=<callback> 
 	realpathSync --p=<p>  --options=<options> 
 	rename --oldPath=<oldPath>  --newPath=<newPath>  --callback=<callback> 
 	renameSync --oldPath=<oldPath>  --newPath=<newPath> 
-	rmdir --path=<path>  --callback=<callback> 
-	rmdirSync --path=<path> 
-	stat --path=<path>  --options=<options>  --callback=<callback> 
-	statSync --path=<path>  --options=undefined 
+	rmdir --path=<path>  --options=<options>  --callback=<callback> 
+	rmdirSync --path=<path>  --options=<options> 
+	stat --path=<path>  --options=false  --callback=<callback> 
+	statSync --path=<path>  --options=false 
 	symlink --target=<target>  --path=<path>  --type_=<type_>  --callback_=<callback_> 
 	symlinkSync --target=<target>  --path=<path>  --type=<type> 
 	truncate --path=<path>  --len=<len>  --callback=<callback> 
@@ -278,7 +390,9 @@ COMMANDS:
 	write --fd=<fd>  --buffer=<buffer>  --offset=<offset>  --length=<length>  --position=<position>  --callback=<callback> 
 	writeFile --path=<path>  --data=<data>  --options=<options>  --callback=<callback> 
 	writeFileSync --path=<path>  --data=<data>  --options=<options> 
-	writeSync --fd=<fd>  --buffer=<buffer>  --offset=<offset>  --length=<length>  --position=<position>"
+	writeSync --fd=<fd>  --buffer=<buffer>  --offset=<offset>  --length=<length>  --position=<position> 
+	writev --fd=<fd>  --buffers=<buffers>  --position=<position>  --callback=<callback> 
+	writevSync --fd=<fd>  --buffers=<buffers>  --position=<position>"
 `;
 
 exports[`js-fire cli helpText 1`] = `
@@ -330,6 +444,7 @@ USAGE:
 
 COMMANDS:
 
+	Dir
 	Dirent
 	FileReadStream --path=<path>  --options=<options> 
 	FileWriteStream --path=<path>  --options=<options> 
@@ -358,8 +473,8 @@ COMMANDS:
 	fchownSync --fd=<fd>  --uid=<uid>  --gid=<gid> 
 	fdatasync --fd=<fd>  --callback=<callback> 
 	fdatasyncSync --fd=<fd> 
-	fstat --fd=<fd>  --options=<options>  --callback=<callback> 
-	fstatSync --fd=<fd>  --options=undefined 
+	fstat --fd=<fd>  --options=false  --callback=<callback> 
+	fstatSync --fd=<fd>  --options=false 
 	fsync --fd=<fd>  --callback=<callback> 
 	fsyncSync --fd=<fd> 
 	ftruncate --fd=<fd>  --len=0  --callback=<callback> 
@@ -370,14 +485,47 @@ COMMANDS:
 	lchownSync --path=<path>  --uid=<uid>  --gid=<gid> 
 	link --existingPath=<existingPath>  --newPath=<newPath>  --callback=<callback> 
 	linkSync --existingPath=<existingPath>  --newPath=<newPath> 
-	lstat --path=<path>  --options=<options>  --callback=<callback> 
-	lstatSync --path=<path>  --options=undefined 
+	lstat --path=<path>  --options=false  --callback=<callback> 
+	lstatSync --path=<path>  --options=false 
+	lutimes --path=<path>  --atime=<atime>  --mtime=<mtime>  --callback=<callback> 
+	lutimesSync --path=<path>  --atime=<atime>  --mtime=<mtime> 
 	mkdir --path=<path>  --options=<options>  --callback=<callback> 
 	mkdirSync --path=<path>  --options=<options> 
 	mkdtemp --prefix=<prefix>  --options=<options>  --callback=<callback> 
 	mkdtempSync --prefix=<prefix>  --options=<options> 
 	open --path=<path>  --flags=<flags>  --mode=<mode>  --callback=<callback> 
 	openSync --path=<path>  --flags=<flags>  --mode=<mode> 
+	opendir --path=<path>  --options=<options>  --callback=<callback> 
+	opendirSync --path=<path>  --options=<options> 
+
+	promises
+		access --path=<path>  --mode=js-fire-unknown-value 
+		appendFile --path=<path>  --data=<data>  --options=<options> 
+		chmod --path=<path>  --mode=<mode> 
+		chown --path=<path>  --uid=<uid>  --gid=<gid> 
+		copyFile --src=<src>  --dest=<dest>  --flags=<flags> 
+		lchmod --path=<path>  --mode=<mode> 
+		lchown --path=<path>  --uid=<uid>  --gid=<gid> 
+		link --existingPath=<existingPath>  --newPath=<newPath> 
+		lstat --path=<path>  --options=false 
+		lutimes --path=<path>  --atime=<atime>  --mtime=<mtime> 
+		mkdir --path=<path>  --options=<options> 
+		mkdtemp --prefix=<prefix>  --options=<options> 
+		open --path=<path>  --flags=<flags>  --mode=<mode> 
+		opendir --...args=<...args> 
+		readFile --path=<path>  --options=<options> 
+		readdir --path=<path>  --options=<options> 
+		readlink --path=<path>  --options=<options> 
+		realpath --path=<path>  --options=<options> 
+		rename --oldPath=<oldPath>  --newPath=<newPath> 
+		rmdir --path=<path>  --options=<options> 
+		stat --path=<path>  --options=false 
+		symlink --target=<target>  --path=<path>  --type_=<type_> 
+		truncate --path=<path>  --len=0 
+		unlink --path=<path> 
+		utimes --path=<path>  --atime=<atime>  --mtime=<mtime> 
+		writeFile --path=<path>  --data=<data>  --options=<options> 
+
 	read --fd=<fd>  --buffer=<buffer>  --offset=<offset>  --length=<length>  --position=<position>  --callback=<callback> 
 	readFile --path=<path>  --options=<options>  --callback=<callback> 
 	readFileSync --path=<path>  --options=<options> 
@@ -386,14 +534,16 @@ COMMANDS:
 	readdirSync --path=<path>  --options=<options> 
 	readlink --path=<path>  --options=<options>  --callback=<callback> 
 	readlinkSync --path=<path>  --options=<options> 
+	readv --fd=<fd>  --buffers=<buffers>  --position=<position>  --callback=<callback> 
+	readvSync --fd=<fd>  --buffers=<buffers>  --position=<position> 
 	realpath --p=<p>  --options=<options>  --callback=<callback> 
 	realpathSync --p=<p>  --options=<options> 
 	rename --oldPath=<oldPath>  --newPath=<newPath>  --callback=<callback> 
 	renameSync --oldPath=<oldPath>  --newPath=<newPath> 
-	rmdir --path=<path>  --callback=<callback> 
-	rmdirSync --path=<path> 
-	stat --path=<path>  --options=<options>  --callback=<callback> 
-	statSync --path=<path>  --options=undefined 
+	rmdir --path=<path>  --options=<options>  --callback=<callback> 
+	rmdirSync --path=<path>  --options=<options> 
+	stat --path=<path>  --options=false  --callback=<callback> 
+	statSync --path=<path>  --options=false 
 	symlink --target=<target>  --path=<path>  --type_=<type_>  --callback_=<callback_> 
 	symlinkSync --target=<target>  --path=<path>  --type=<type> 
 	truncate --path=<path>  --len=<len>  --callback=<callback> 
@@ -408,7 +558,9 @@ COMMANDS:
 	write --fd=<fd>  --buffer=<buffer>  --offset=<offset>  --length=<length>  --position=<position>  --callback=<callback> 
 	writeFile --path=<path>  --data=<data>  --options=<options>  --callback=<callback> 
 	writeFileSync --path=<path>  --data=<data>  --options=<options> 
-	writeSync --fd=<fd>  --buffer=<buffer>  --offset=<offset>  --length=<length>  --position=<position>"
+	writeSync --fd=<fd>  --buffer=<buffer>  --offset=<offset>  --length=<length>  --position=<position> 
+	writev --fd=<fd>  --buffers=<buffers>  --position=<position>  --callback=<callback> 
+	writevSync --fd=<fd>  --buffers=<buffers>  --position=<position>"
 `;
 
 exports[`js-fire object command not found 1`] = `
