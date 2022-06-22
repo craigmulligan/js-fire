@@ -35,7 +35,7 @@ describe('js-fire', () => {
     })
   })
 
-  describe('circular reference', async () => {
+  describe('circular reference', () => {
     test('should compile', async () => {
       const { stdout } = await exec(
         'node examples/circular-reference.js half --number 20',
