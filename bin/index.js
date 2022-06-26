@@ -1,26 +1,26 @@
 #!/usr/bin/env node
-const fire = require('../')
-const minimist = require('minimist')
-const { alias } = require('../lib/utils')
+const fire = require("../");
+const minimist = require("minimist");
+const { alias } = require("../lib/utils");
 
-const createCLI = async modulePath => {
-  let module
+const createCLI = async (modulePath) => {
+  let module;
   try {
-    module = require(modulePath)
+    module = require(modulePath);
   } catch (err) {
-    console.log(err)
+    console.log(err);
   }
 
   if (module) {
-    const instance = module.default || module
-    await fire(module)
+    const instance = module.default || module;
+    await fire(module);
   }
-}
+};
 
 fire(
   createCLI,
   minimist(process.argv.slice(2), {
-    '--': true,
+    "--": true,
     alias,
-  }),
-)
+  })
+);

@@ -8,13 +8,16 @@
   "license": "MIT",
   "private": false,
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "fmt": "prettier --write ./",
+    "fmt_check": "prettier --check ./"
   },
   "bin": {
     "js-fire": "bin/index.js"
   },
   "devDependencies": {
-    "jest": "^28.1.1"
+    "jest": "^28.1.1",
+    "prettier": "^2.7.1"
   },
   "jest": {
     "testEnvironment": "node"

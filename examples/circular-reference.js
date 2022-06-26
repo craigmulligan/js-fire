@@ -1,10 +1,10 @@
-const fire = require('../')
+const fire = require("../");
 
 const calculator = {
-  half: number => +number / 2,
-  double: number => +number * 2,
-}
+  half: (number) => +number / 2,
+  double: (number) => +number * 2,
+};
 
-calculator['self'] = calculator
+calculator["self"] = calculator;
 
-fire(calculator)
+fire(calculator);
