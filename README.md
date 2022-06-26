@@ -5,10 +5,10 @@
 js-fire is a library for automatically generating command line interfaces
 (CLIs) from most js objects.
 
-* js Fire is a simple way to create a CLI in js.
-* js Fire helps with exploring existing code or turning other people's code
+- js Fire is a simple way to create a CLI in js.
+- js Fire helps with exploring existing code or turning other people's code
   into a CLI.
-* js Fire makes transitioning between Bash and js easier.
+- js Fire makes transitioning between Bash and js easier.
 
 ## Installation
 
@@ -29,25 +29,25 @@ You can call `Fire` on any functions and objects:<br>
 Here's an example of calling Fire on a object, you can infinitely nest objects to create subcommands.
 
 ```javascript
-const fire = require('js-fire')
+const fire = require("js-fire");
 
 const calculator = {
-  __description__: 'I am a math machine',
-  double: number => {
+  __description__: "I am a math machine",
+  double: (number) => {
     // I double things
-    return 2 * number
+    return 2 * number;
   },
   add: (n1 = Math.PI, n2) => {
-    return n1 + n2
+    return n1 + n2;
   },
   misc: {
-    year: () => '1999',
-    brand: () => 'casio',
-    hello: name => `hello ${name}`,
+    year: () => "1999",
+    brand: () => "casio",
+    hello: (name) => `hello ${name}`,
   },
-}
+};
 
-fire(calculator)
+fire(calculator);
 ```
 
 Then, from the command line, you can run:
